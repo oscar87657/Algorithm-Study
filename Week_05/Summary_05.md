@@ -131,6 +131,34 @@ def activity_selection(meetings):
 
 - **복잡도 분석**: 종료 시간 기준 정렬에  $O(n \log\_{2}{n})$ , 순차 선택에  $O(n)$  이 소요되어 총  $O(n \log\_{2}{n})$  입니다.
 
+### 2.4 작업 스케줄링 (Job Scheduling with Deadlines)
+각 작업에 마감 시간(Deadline)과 이익(Profit)이 주어졌을 때, 마감 시간 내에 작업을 완료하여 얻을 수 있는 총 이익을 극대화하는 문제입니다.
+
+- **그리디 전략**: **이익 (Profit)** 이 가장 높은 작업부터 선택하여, 해당 작업의 **마감 시간에 가장 가까운 빈 시간대**에 배치합니다.
+- **회의실 배정과의 차이**: 회의실 배정은 '개수'를 최대화하지만, 작업 스케줄링은 각 작업의 '가치(이익)'를 고려하여 총합을 최대화합니다.
+
+**[작동 로직 (Python)]**
+```python
+def job_scheduling(jobs, t):
+    # 이익 기준 내림차순 정렬
+    jobs.sort(key=lambda x: x[2], reverse=True)
+    
+    result = [None] * t # 시간대별 할당 결과
+    total_profit = 0
+    
+    for job_id, deadline, profit in jobs:
+        # 마감 시간부터 역순으로 빈 자리가 있는지 확인
+        for j in range(min(t, deadline) - 1, -1, -1):
+            if result[j] is None:
+                result[j] = job_id
+                total_profit += profit
+                break
+                
+    return result, total_profit
+```
+
+- **핵심 포인트**: 이익이 큰 작업을 먼저 처리하되, 가능한 한 마감 직전에 배치하여 앞쪽 시간대를 다른 작업을 위해 남겨두는 탐욕적 선택을 합니다.
+
 ---
 
 <a id="huffman"></a>
