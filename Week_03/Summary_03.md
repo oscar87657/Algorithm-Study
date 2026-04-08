@@ -17,141 +17,59 @@
 <a id="ds"></a>
 ## 1. 기본 자료구조 리뷰 (DS Review) (#ds)
 
-알고리즘의 효율적인 구현을 위해 데이터의 조직화 방식인 자료구조를 정확히 이해하는 것이 중요합니다.
+알고리즘의 효율적인 설계와 구현을 위해서는 데이터를 조직화하는 기본 자료구조에 대한 깊은 이해가 필수적입니다.
 
 ### 1.1 연결 리스트 (Linked List)
-데이터와 다음 노드의 주소를 저장하는 포인터로 구성된 **노드 (Node)** 들의 연결체입니다.
-- **특징**: 메모리 상에 연속적으로 배치되지 않아도 되며, 삽입과 삭제가 자유롭습니다.
-- **시간 복잡도**: 특정 원소 탐색 시 첫 노드부터 순차적으로 접근해야 하므로 최악의 경우 ** $O(n)$ ** 이 소요됩니다.
-
+연결 리스트는 데이터와 다음 노드를 가리키는 포인터를 포함하는 **노드 (Node)** 들의 선형 시퀀스입니다.
+- **구조와 특징**: 각 노드는 데이터 필드와 링크 필드로 구성되며, 메모리 상에 비연속적으로 존재할 수 있어 삽입과 삭제가 유연합니다.
+- **성능 분석**: 특정 위치의 원소를 찾거나 탐색하는 연산은 첫 노드부터 순차적으로 방문해야 하므로 최악의 경우  $O(n)$  의 시간이 소요됩니다.
+- **핵심 구조**:
 ```python
 class Node:
     def __init__(self, data):
-        self.data = data  # 데이터 저장
-        self.next = None  # 다음 노드를 가리키는 포인터
-
-class LinkedList:
-    def __init__(self):
-        self.head = None  # 리스트의 시작 노드
-
-    def append(self, data):
-        """리스트의 맨 뒤에 새로운 데이터를 추가합니다."""
-        new_node = Node(data)
-        if not self.head:
-            self.head = new_node
-            return
-        curr = self.head
-        while curr.next:  # 마지막 노드까지 이동 (O(n))
-            curr = curr.next
-        curr.next = new_node
-
-    def display(self):
-        """리스트의 모든 데이터를 출력합니다."""
-        curr = self.head
-        while curr:
-            print(curr.data, end=" -> ")
-            curr = curr.next
-        print("None")
+        self.data = data
+        self.next = None # 다음 노드를 가리키는 참조
 ```
 
 ### 1.2 스택 (Stack)
-**LIFO (Last-In First-Out, 후입선출)** 원칙을 따르는 선형 자료구조입니다.
-- **주요 연산**: `push` (데이터 삽입), `pop` (가장 최근 데이터 삭제 및 반환).
-- **응용**: 재귀 알고리즘의 시스템 스택, 수식의 괄호 검사, 실행 취소(Undo).
-
+스택은 한쪽 끝에서만 데이터의 삽입과 삭제가 일어나는 **LIFO (Last-In, First-Out, 후입선출)** 방식의 자료구조입니다.
+- **주요 연산**: 데이터를 쌓는  `push()`  와 가장 위의 데이터를 꺼내는  `pop()`  연산으로 구성됩니다.
+- **응용 사례**: 함수 호출의 시스템 스택(Recursion 관리), 수식 계산(역폴란드 표기법), 웹 브라우저의 뒤로 가기 기능 등에서 사용됩니다.
+- **간결한 구현 예시**:
 ```python
-class Stack:
-    def __init__(self):
-        self.items = []
-
-    def is_empty(self):
-        return len(self.items) == 0
-
-    def push(self, item):
-        """데이터를 스택의 맨 위에 쌓습니다 (O(1))."""
-        self.items.append(item)
-
-    def pop(self):
-        """스택 맨 위의 데이터를 제거하고 반환합니다 (O(1))."""
-        if not self.is_empty():
-            return self.items.pop()
-        raise IndexError("Stack is empty")
+stack = []
+stack.append(item) # push: O(1)
+stack.pop()        # pop: O(1)
 ```
 
 ### 1.3 큐 (Queue)
-**FIFO (First-In First-Out, 선입선출)** 원칙을 따르는 선형 자료구조입니다.
-- **주요 연산**: `enqueue` (데이터 삽입), `dequeue` (가장 먼저 들어온 데이터 삭제 및 반환).
-- **응용**: 프로세스 관리(스케줄링), 네트워크 버퍼, 너비 우선 탐색(BFS).
-
+큐는 리스트의 한쪽 끝에서는 삽입이, 반대쪽 끝에서는 삭제가 일어나는 **FIFO (First-In, First-Out, 선입선출)** 방식의 자료구조입니다.
+- **주요 연산**: 뒤쪽(Rear)에 데이터를 추가하는  `enqueue()`  와 앞쪽(Front)에서 데이터를 꺼내는  `dequeue()`  연산이 핵심입니다.
+- **응용 사례**: 운영체제의 프로세스 스케줄링, 네트워크 패킷 버퍼링, 너비 우선 탐색(BFS)의 방문 노드 관리 등에 필수적입니다.
+- **간결한 구현 예시**:
 ```python
 from collections import deque
-
-class Queue:
-    def __init__(self):
-        # 파이썬의 리스트는 pop(0)이 O(n)이므로, O(1)인 deque를 사용합니다.
-        self.items = deque()
-
-    def is_empty(self):
-        return len(self.items) == 0
-
-    def enqueue(self, item):
-        """데이터를 큐의 뒤쪽에 추가합니다 (O(1))."""
-        self.items.append(item)
-
-    def dequeue(self):
-        """큐의 앞쪽 데이터를 제거하고 반환합니다 (O(1))."""
-        if not self.is_empty():
-            return self.items.popleft()
-        raise IndexError("Queue is empty")
+queue = deque()
+queue.append(item) # enqueue: O(1)
+queue.popleft()    # dequeue: O(1)
 ```
 
 ### 1.4 힙 (Heap)
-**완전 이진 트리 (Complete Binary Tree)** 기반의 자료구조로, 부모 노드와 자식 노드 간의 일정한 대소 관계(힙 속성)를 유지합니다.
-- **종류**:
-    - **최대 힙 (Max Heap)**: 부모 노드의 키값이 자식보다 크거나 같음.
-    - **최소 힙 (Min Heap)**: 부모 노드의 키값이 자식보다 작거나 같음.
-- **배열 표현 (1번 인덱스 시작 기준)**:
-    - $A[i]$ 의 왼쪽 자식 인덱스: ** $2i$ **
-    - $A[i]$ 의 오른쪽 자식 인덱스: ** $2i + 1$ **
-    - $A[i]$ 의 부모 노드 인덱스: ** $\lfloor i/2 \rfloor$ **
-- **복잡도**: 삽입 및 삭제 연산 시 트리 높이에 비례하는 ** $O(\log\_{2}{n})$ ** 이 소요됩니다.
-
+힙은 **완전 이진 트리 (Complete Binary Tree)** 의 일종으로, 부모와 자식 노드 간의 키값 대소 관계를 유지하는 자료구조입니다.
+- **힙 속성 (Heap Property)**:
+    - **최대 힙 (Max Heap)**: 모든 노드에 대해  $\text{key(parent)} \ge \text{key(child)}$  를 만족합니다.
+    - **최소 힙 (Min Heap)**: 모든 노드에 대해  $\text{key(parent)} \le \text{key(child)}$  를 만족합니다.
+- **배열을 이용한 구현**: 힙은 포인터 없이 배열만으로 효율적으로 저장 가능합니다. (1번 인덱스 시작 기준)
+    -  $A[i]$  의 왼쪽 자식:  $A[2i]$ 
+    -  $A[i]$  의 오른쪽 자식:  $A[2i + 1]$ 
+    -  $A[i]$  의 부모 노드:  $A[\lfloor i/2 \rfloor]$ 
+- **복잡도**: 삽입과 삭제(추출) 시 트리의 높이에 비례하는  $O(\log\_{2}{n})$  의 시간을 보장합니다.
+- **핵심 연산 (Python 내장 라이브러리)**:
 ```python
-class MinHeap:
-    def __init__(self):
-        self.heap = [0]  # 인덱스 계산 편의를 위해 0번은 사용하지 않음
-
-    def insert(self, val):
-        """새로운 값을 삽입하고 힙 속성을 유지합니다 (Up-Heap)."""
-        self.heap.append(val)
-        idx = len(self.heap) - 1
-        # 부모와 비교하며 위로 올림
-        while idx > 1 and self.heap[idx] < self.heap[idx // 2]:
-            self.heap[idx], self.heap[idx // 2] = self.heap[idx // 2], self.heap[idx]
-            idx //= 2
-
-    def extract_min(self):
-        """최솟값(루트)을 제거하고 힙을 재정비합니다 (Down-Heap)."""
-        if len(self.heap) <= 1: return None
-        if len(self.heap) == 2: return self.heap.pop()
-
-        root = self.heap[1]
-        self.heap[1] = self.heap.pop()  # 맨 마지막 노드를 루트로 이동
-        self.heapify(1)
-        return root
-
-    def heapify(self, i):
-        """특정 노드에서 아래로 내려가며 힙 속성을 복구합니다."""
-        left, right = 2 * i, 2 * i + 1
-        smallest = i
-        n = len(self.heap) - 1
-
-        if left <= n and self.heap[left] < self.heap[smallest]: smallest = left
-        if right <= n and self.heap[right] < self.heap[smallest]: smallest = right
-
-        if smallest != i:
-            self.heap[i], self.heap[smallest] = self.heap[smallest], self.heap[i]
-            self.heapify(smallest)
+import heapq
+heap = []
+heapq.heappush(heap, item) # 최소 힙 삽입: O(log n)
+min_val = heapq.heappop(heap) # 최솟값 추출: O(log n)
 ```
 
 ---
