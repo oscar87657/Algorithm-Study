@@ -106,6 +106,26 @@ Item 3: 120$ / 30kg ($4/kg)
 
 - **복잡도 분석**: 물건을 가치 비율 순으로 정렬하는 데  $O(n \log\_{2}{n})$  의 시간이 소요됩니다.
 
+**[작동 로직 (Python)]**
+```python
+def fractional_knapsack(items, capacity):
+    # 단위 무게당 가치(v/w) 기준으로 내림차순 정렬
+    items.sort(key=lambda x: x[0]/x[1], reverse=True)
+    
+    total_value = 0
+    for value, weight in items:
+        if capacity \ge weight:
+            # 물건을 통째로 담을 수 있는 경우
+            capacity -= weight
+            total_value += value
+        else:
+            # 물건의 일부만 담는 경우 (Fractional)
+            total_value += value * (capacity / weight)
+            break
+            
+    return total_value
+```
+
 ### 2.3 회의실 배정 (Activity Selection)
 한 개의 회의실에서 가장 많은 회의를 열 수 있도록 스케줄을 짜는 문제입니다.
 
