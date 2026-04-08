@@ -284,3 +284,39 @@ def generate_codes(node, current_code, codes):
 | **접근 방식** | 간선(Edge) 중심 | 정점(Vertex) 중심 |
 | **자료구조** | Union-Find, 정렬 | 우선순위 큐 (Priority Queue) |
 | **유리한 경우** | 간선이 적은 희소 그래프 (Sparse) | 간선이 많은 밀집 그래프 (Dense) |
+
+### 4.2 최단 경로 (Shortest Path - Dijkstra's Algorithm)
+주어진 시작 정점에서 다른 모든 정점까지의 최단 거리를 찾는 알고리즘입니다.
+
+- **그리디 전략**: 아직 방문하지 않은 정점들 중 **시작점으로부터의 거리가 가장 짧은 정점**을 매번 선택합니다.
+- **정점 이완 (Edge Relaxation)**: 새로운 정점  $u$  를 거쳐서 정점  $v$  로 가는 거리가 기존에 알려진  $v$  까지의 거리보다 짧다면, 그 거리를 갱신합니다.
+    -  $\text{if } d[u] + w(u, v) \lt d[v] \text{ then } d[v] = d[u] + w(u, v)$ 
+- **제약 사항**: 모든 간선의 가중치가 **0 이상**이어야 합니다. (음수 가중치가 있을 경우 벨만-포드 알고리즘 필요)
+- **복잡도**: 우선순위 큐(Min-Heap)를 사용할 경우  $O(E \log\_{2}{V})$  가 소요됩니다.
+
+**[작동 로직 (Python)]**
+```python
+import heapq
+
+def dijkstra(graph, start):
+    distances = {node: float('inf') for node in graph}
+    distances[start] = 0
+    queue = [(0, start)]
+    
+    while queue:
+        current_distance, current_node = heapq.heappop(queue)
+        
+        # 이미 처리된 노드라면 스킵
+        if distances[current_node] \lt current_distance:
+            continue
+            
+        for neighbor, weight in graph[current_node].items():
+            distance = current_distance + weight
+            
+            # 더 짧은 경로를 찾은 경우 (Relaxation)
+            if distance \lt distances[neighbor]:
+                distances[neighbor] = distance
+                heapq.heappush(queue, (distance, neighbor))
+                
+    return distances
+```
