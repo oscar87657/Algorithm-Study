@@ -51,10 +51,9 @@
 - [x] 스터디 환경 구축 및 `gemini.md` 설정 (바탕화면 이동 완료)
 - [x] LaTeX 및 한국어 서식 규칙 업데이트 (선형대수학 지침 반영)
 - [x] Week 01 ~ 05 기본 구조 생성 및 알고리즘 구현 파일(py, c, java) 생성 완료
-- [x] Week 01 ~ 05 요약 파일(`Summary_03.md` 자료구조 파트 보강 중)
+- [x] Week 01 ~ 05 요약 파일(`Summary_03.md` 상세 보강 완료)
 - [x] Git 업데이트 및 원격 저장소 푸시 (최종 완료)
 - [ ] Week 01: 알고리즘 구현 시작 (Binary Search 등)
-- [ ] Week 03: Summary_03.md 보강 (1. 자료구조 완료, 2~6 진행 예정)
 
 ## 8. Git 자동화 스크립트 (Windows용)
 ```powershell

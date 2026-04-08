@@ -311,7 +311,10 @@ def quick_sort(arr):
 [ 3 ] [ 6 ]                [ 6 ]
 ```
 
-- **복잡도**: 모든 경우에  $\Theta(n \log\_{2}{n})$  을 보장하며, 제자리 정렬이 가능합니다.
+- **상세 복잡도 분석**:
+    1.  **Build-Heap Phase**: 무작위 배열을 힙으로 만드는 과정은 단순 계산 시  $O(n \log\_{2}{n})$  으로 보이나, 실제로는 각 노드의 높이에 비례하는 작업의 합이므로  ** $O(n)$ **  에 가능합니다.
+    2.  **Sorting Phase**: 루트를 추출하고 남은 원소들에 대해  `heapify`  를 수행하는 과정이  $n-1$  번 반복됩니다. 각  `heapify`  는 트리의 높이인  $O(\log\_{2}{n})$  이 소요됩니다.
+- **최종 복잡도**: 모든 경우에 대해  $\Theta(n + n \log\_{2}{n}) = \Theta(n \log\_{2}{n})$  을 보장합니다.
 - **간결한 구현**:
 ```python
 import heapq
@@ -319,8 +322,8 @@ import heapq
 def heap_sort(arr):
     h = []
     for value in arr:
-        heapq.heappush(h, value) # Min-Heap 삽입
-    return [heapq.heappop(h) for _ in range(len(h))]
+        heapq.heappush(h, value) # Min-Heap 삽입 (O(log n))
+    return [heapq.heappop(h) for _ in range(len(h))] # 추출 (O(n log n))
 ```
 
 ---
@@ -334,13 +337,16 @@ def heap_sort(arr):
 
 **[작동 원리 시각화]**
 ```text
-Input:  [ 2, 1, 2, 0 ]
+Input:  [ 2, 1, 2, 0 ]  (n=4, k=2)
 Count:  [ 0:1, 1:1, 2:2 ] (각 숫자의 개수 기록)
 Prefix: [ 0:1, 1:2, 2:4 ] (누적 합: 해당 숫자가 끝날 위치)
 Output: [ 0, 1, 2, 2 ]   (위치에 맞게 데이터 배치)
 ```
 
-- **동작 조건**: 데이터 범위  $k$  가  $O(n)$  일 때  $\Theta(n)$  에 동작합니다.
+- **상세 복잡도 및 제약**:
+    - **시간 복잡도**: 데이터 개수  $n$  과 데이터의 범위  $k$  에 대해  $\Theta(n + k)$  가 소요됩니다.
+    - **공간 복잡도**: 범위  $k$  만큼의 카운트 배열이 필요하므로  $O(k)$  의 추가 메모리가 필요합니다.
+- **주요 특징**: 데이터의 범위  $k$  가  $O(n)$  일 때만 선형 시간 정렬로서 의미가 있습니다. 또한, 누적 합을 이용하여 뒤에서부터 배치하면 **안정 정렬 (Stable Sort)** 을 유지할 수 있습니다.
 - **간결한 구현**:
 ```python
 def counting_sort(arr, k): # k: 데이터의 최대값
@@ -348,7 +354,7 @@ def counting_sort(arr, k): # k: 데이터의 최대값
     for x in arr: count[x] += 1
     result = []
     for i in range(k + 1):
-        result.extend([i] * count[i])
+        result.extend([i] * count[i]) # O(n + k)
     return result
 ```
 
@@ -357,20 +363,24 @@ def counting_sort(arr, k): # k: 데이터의 최대값
 
 **[작동 원리 시각화]**
 ```text
-[ 170, 045, 075, 090 ] (초기 데이터)
-Step 1: 1의 자리 정렬 -> [ 170, 090, 045, 075 ]
+[ 170, 045, 075, 090 ] (초기 데이터, d=3)
+Step 1: 1의 자리 정렬 -> [ 170, 090, 045, 075 ] (안정 정렬 유지)
 Step 2: 10의 자리 정렬 -> [ 045, 170, 075, 090 ]
 Step 3: 100의 자리 정렬 -> [ 045, 075, 090, 170 ] (완료)
 ```
 
-- **복잡도**: 자릿수가  $d$  일 때  $\Theta(dn)$  이 소요됩니다. ( $d$ 가 상수이면 선형 시간)
+- **상세 복잡도 분석**:
+    - 데이터의 개수를  $n$ , 자릿수를  $d$ , 각 자릿수에서 사용하는 기수(Radix)의 범위를  $k$  라고 할 때, 총 복잡도는  $\Theta(d(n + k))$  입니다.
+    - 만약  $d$  와  $k$  가  $n$  에 비해 매우 작은 상수라면  $\Theta(n)$  에 수렴합니다.
+- **핵심 조건**: 각 자릿수별 정렬 단계에서 반드시 **안정 정렬 (Stable Sort)** 을 사용해야 합니다. 그렇지 않으면 이전 단계의 정렬 결과가 무효화됩니다.
 - **간결한 구현**:
 ```python
 def radix_sort(arr):
     max_val = max(arr)
     exp = 1 # 1, 10, 100... 자릿수
     while max_val // exp \gt 0:
-        arr = counting_sort_for_radix(arr, exp)
+        # 각 자릿수에 대해 계수 정렬(안정 정렬) 수행
+        arr = stable_counting_sort(arr, exp)
         exp *= 10
     return arr
 ```
