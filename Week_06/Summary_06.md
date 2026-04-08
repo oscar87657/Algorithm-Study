@@ -10,7 +10,7 @@
 3. [최장 공통 부분 수열 (LCS)](#lcs)
 4. [0-1 배낭 문제 (0-1 Knapsack)](#knapsack)
 5. [동전 거스름돈 (Coin Change - DP)](#coin)
-6. [모든 쌍 최단 경로 (Floyd-Warshall) (TBA)](#floyd)
+6. [모든 쌍 최단 경로 (Floyd-Warshall)](#floyd)
 7. [편집 거리 (Edit Distance) (TBA)](#edit)
 8. [성능 요약 및 알고리즘 비교 (TBA)](#comparison)
 
@@ -244,4 +244,53 @@ def coin_change_dp(coins, amount):
                 c[j] = min(c[j], c[j - coin] + 1)
                 
     return c[amount]
+```
+
+---
+
+<a id="floyd"></a>
+## 6. 모든 쌍 최단 경로 (Floyd-Warshall) (#floyd)
+
+**플로이드-워셜 (Floyd-Warshall)** 알고리즘은 그래프 내의 **모든 정점 쌍** 사이의 최단 경로를 구하는 알고리즘입니다. 음수 가중치가 있어도 작동하지만, 음수 사이클이 없어야 합니다.
+
+### 6.1 핵심 아이디어
+"두 정점  $i$  와  $j$  사이의 최단 경로를 구할 때, 중간에 정점  $k$  를 거쳐가는 것이 더 빠른가?" 라는 질문을 모든 정점  $k$  에 대해 순차적으로 던집니다.
+
+- **단계별 확장**: 처음에는 중간 정점 없이 직접 연결된 간선만 고려합니다. 그 후, 정점 1을 거쳐가는 경로, 정점 2를 거쳐가는 경로... 식으로 중간 정점 후보를 하나씩 늘려갑니다.
+
+### 6.2 점화식
+ $d_{ij}^{(k)}$  를 **"정점  $\{1, 2, \dots, k\}$  만을 중간 정점으로 사용하여  $i$  에서  $j$  로 가는 최단 거리"** 라 정의합니다.
+
+$$
+d_{ij}^{(k)} = \min\left(d_{ij}^{(k-1)},\ d_{ik}^{(k-1)} + d_{kj}^{(k-1)}\right)
+$$
+
+- ** $d_{ij}^{(k-1)}$ **: 정점  $k$  를 거치지 않는 기존의 최단 거리.
+- ** $d_{ik}^{(k-1)} + d_{kj}^{(k-1)}$ **: 정점  $k$  를 중간 기점으로 삼아 거쳐가는 새로운 경로의 거리.
+
+### 6.3 특징 및 복잡도
+- **시간 복잡도**: 정점의 개수가  $V$  일 때, 3중 반복문을 사용하므로 항상  $\Theta(V^{3})$  입니다.
+- **장점**: 구현이 매우 간결하며, 모든 쌍의 거리를 한 번에 구할 수 있습니다.
+
+**[작동 로직 (Python)]**
+```python
+def floyd_warshall(graph, v):
+    # 거리를 저장할 2차원 리스트 (무한대로 초기화)
+    dist = [[float('inf')] * v for _ in range(v)]
+    
+    # 자기 자신으로의 거리는 0
+    for i in range(v): dist[i][i] = 0
+    
+    # 간선 정보 초기화 (직접 연결된 경로)
+    for u, v_target, w in graph:
+        dist[u][v_target] = w
+        
+    # 플로이드-워셜 핵심 3중 반복문
+    for k in range(v): # 1. 중간 정점
+        for i in range(v): # 2. 출발 정점
+            for j in range(v): # 3. 도착 정점
+                if dist[i][j] \gt dist[i][k] + dist[k][j]:
+                    dist[i][j] = dist[i][k] + dist[k][j]
+                    
+    return dist
 ```
