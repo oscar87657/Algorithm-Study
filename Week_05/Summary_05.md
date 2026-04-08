@@ -7,7 +7,7 @@
 ## 📝 목차
 1. [그리디 알고리즘(Greedy Algorithm) 개요](#intro)
 2. [기초 그리디 알고리즘 사례](#basic)
-3. [데이터 압축과 허프만 코딩 (TBA)](#huffman)
+3. [데이터 압축과 허프만 코딩](#huffman)
 4. [그래프 내의 그리디 알고리즘 (TBA)](#graph)
 5. [그리디 vs 동적 계획법 (TBA)](#comparison)
 
@@ -130,3 +130,60 @@ def activity_selection(meetings):
 ```
 
 - **복잡도 분석**: 종료 시간 기준 정렬에  $O(n \log\_{2}{n})$ , 순차 선택에  $O(n)$  이 소요되어 총  $O(n \log\_{2}{n})$  입니다.
+
+---
+
+<a id="huffman"></a>
+## 3. 데이터 압축과 허프만 코딩 (Huffman Coding) (#huffman)
+
+**허프만 코딩 (Huffman Coding)** 은 문자의 출현 빈도에 따라 각기 다른 길이의 부호를 부여하는 **가변 길이 부호화 (Variable-length Encoding)** 방식입니다.
+
+### 3.1 접두사 코드 (Prefix Code)
+어떤 문자의 부호가 다른 문자 부호의 앞부분(Prefix)이 되지 않도록 설계된 코드입니다. 이 성질 덕분에 부호 사이의 구분자 없이도 모호함 없이 해독(Decoding)이 가능합니다.
+
+- **예시**: `A: 0`, `B: 10`, `C: 110` (접두사 속성 만족)
+
+### 3.2 허프만 트리 구축 (Greedy Strategy)
+허프만 코딩은 **"빈도수가 낮은 문자들부터 먼저 합친다"** 는 탐욕적 선택을 통해 최적의 이진 트리를 구성합니다.
+
+**[트리 구축 과정 시각화]**
+```text
+Frequencies: {A: 45, B: 13, C: 12, D: 16, E: 9, F: 5}
+
+1. 가장 낮은 빈도인 F(5)와 E(9)를 합침 -> New Node(14)
+2. 다음 낮은 빈도인 C(12)와 위에서 만든 Node(14)를 합침... (반복)
+
+최종 트리 형태:
+          [ 100 ]
+         /       \
+      A(45):0    [ 55 ]:1
+                /      \
+             ...        ...
+```
+
+- **그리디 선택**: 매 단계마다 사용되지 않은 노드 중 빈도수가 가장 작은 두 노드를 선택하여 부모 노드를 만듭니다.
+- **부호 할당**: 루트에서 왼쪽 가지는 `0`, 오른쪽 가지는 `1`을 부여하여 각 리프 노드(문자)까지의 경로를 부호로 사용합니다.
+
+### 3.3 복잡도 및 효율성
+- **시간 복잡도**: 우선순위 큐(Min-Heap)를 사용하여 빈도수가 낮은 노드를 추출하므로  $O(n \log\_{2}{n})$  이 소요됩니다.
+- **공간 효율성**: 자주 나타나는 문자는 짧은 코드를, 드물게 나타나는 문자는 긴 코드를 할당받아 전체 파일 크기를 최소화합니다.
+
+**[작동 로직 (Python)]**
+```python
+import heapq
+
+def huffman_encoding(frequencies):
+    # 빈도수를 우선순위 큐에 삽입
+    heap = [[weight, [char, ""]] for char, weight in frequencies.items()]
+    heapq.heapify(heap)
+    
+    while len(heap) \gt 1:
+        lo = heapq.heappop(heap)
+        hi = heapq.heappop(heap)
+        # 왼쪽 가지는 '0', 오른쪽 가지는 '1' 추가
+        for pair in lo[1:]: pair[1] = '0' + pair[1]
+        for pair in hi[1:]: pair[1] = '1' + pair[1]
+        heapq.heappush(heap, [lo[0] + hi[0]] + lo[1:] + hi[1:])
+        
+    return sorted(heapq.heappop(heap)[1:], key=lambda p: (len(p[-1]), p))
+```
