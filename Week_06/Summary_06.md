@@ -12,7 +12,7 @@
 5. [동전 거스름돈 (Coin Change - DP)](#coin)
 6. [모든 쌍 최단 경로 (Floyd-Warshall)](#floyd)
 7. [편집 거리 (Edit Distance)](#edit)
-8. [성능 요약 및 알고리즘 비교 (TBA)](#comparison)
+8. [성능 요약 및 알고리즘 비교](#comparison)
 
 ---
 
@@ -44,6 +44,32 @@ DP를 적용하기 위해서는 문제의 구조가 다음 두 가지 성질을 
     / \   / \                    / \   / \      부분 문제
   (D) (E)(F) (G)               (D) (E) (F) (G)
   (독립적인 구조)               (중복/공유 구조)
+```
+
+### 1.3 구현 전략 (Implementation Strategies)
+
+#### 1) 하향식 (Top-Down): 메모이제이션 (Memoization)
+재귀 호출을 사용하며, 계산된 결과를 메모리에 기록하여 중복 계산을 피하는 방식입니다. 필요한 부분 문제만 해결한다는 장점이 있습니다.
+
+#### 2) 상향식 (Bottom-Up): 타뷸레이션 (Tabulation)
+가장 작은 부분 문제부터 순서대로 테이블을 채워나가는 반복문 기반의 방식입니다. 시스템 스택 오버헤드가 없으며 모든 부분 문제를 체계적으로 해결합니다.
+
+**[구현 방식 비교]**
+```python
+# 1. Top-Down (Memoization)
+def fib_top_down(n, memo):
+    if n \le 2: return 1
+    if memo[n] != 0: return memo[n]
+    memo[n] = fib_top_down(n-1, memo) + fib_top_down(n-2, memo)
+    return memo[n]
+
+# 2. Bottom-Up (Tabulation)
+def fib_bottom_up(n):
+    table = [0] * (n + 1)
+    table[1] = table[2] = 1
+    for i in range(3, n + 1):
+        table[i] = table[i-1] + table[i-2]
+    return table[n]
 ```
 
 ---
@@ -354,3 +380,29 @@ def edit_distance(x, y):
                 e[i][j] = 1 + min(e[i-1][j], e[i][j-1], e[i-1][j-1])
     return e[m][n]
 ```
+
+---
+
+<a id="comparison"></a>
+## 8. 성능 요약 및 알고리즘 비교 (#comparison)
+
+6주차에서 다룬 주요 동적 계획법 알고리즘들의 핵심 점화식과 시간 복잡도를 정리합니다.
+
+| 알고리즘 | 부분 문제 (Subproblem) | 핵심 점화식 (Recurrence) | 시간 복잡도 |
+| :--- | :--- | :--- | :--- |
+| **피보나치** |  $f[i]$  |  $f[i-1] + f[i-2]$  |  $O(n)$  |
+| **행렬 경로** |  $c[i, j]$  |  $m_{ij} + \max(c[i-1, j], c[i, j-1])$  |  $O(n^{2})$  |
+| **LCS** |  $c[i, j]$  | 일치:  $c[i-1, j-1]+1$  / 불일치:  $\max(\dots)$  |  $O(mn)$  |
+| **0-1 배낭** |  $K[i, w]$  |  $\max(K[i-1, w], K[i-1, w-w_{i}] + v_{i})$  |  $O(nC)$  |
+| **동전 거스름돈** |  $C[j]$  |  $\min_{d_{i} \le j} \{ C[j - d_{i}] + 1 \}$  |  $O(nk)$  |
+| **플로이드-워셜** |  $d_{ij}^{(k)}$  |  $\min(d_{ij}^{(k-1)}, d_{ik}^{(k-1)} + d_{kj}^{(k-1)})$  |  $O(V^{3})$  |
+| **편집 거리** |  $E[i, j]$  |  $1 + \min(\text{Delete, Insert, Replace})$  |  $O(mn)$  |
+
+---
+
+### 💡 DP 문제 해결 전략 (Step-by-Step)
+1.  **부분 문제 정의**:  $OPT(i, j, \dots)$  가 무엇을 의미하는지 명확히 정의합니다.
+2.  **점화식 도출**: 현재 단계의 최적해가 이전 단계의 최적해들과 어떤 관계인지 찾습니다.
+3.  **경계 조건 설정**: 가장 작은 단위(Base Case)의 값을 결정합니다.
+4.  **계산 순서 결정**: 주로 상향식(Bottom-up)으로 테이블을 채워나갑니다.
+5.  **결과 추출 및 역추적**: 테이블에서 최종 해를 읽거나 실제 경로를 재구성합니다.
