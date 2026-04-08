@@ -187,4 +187,42 @@ def merge(left, right):
             result.append(right[j]); j += 1
     result.extend(left[i:]); result.extend(right[j:])
     return result
+
+### 3.3 퀵 정렬 (Quick Sort)
+기준 원소인 **피벗 (Pivot)** 을 선택하여 배열을 두 그룹으로 나누고 재귀적으로 정렬하는 방식입니다. 평균적으로 가장 빠른 속도를 자랑합니다.
+
+**[파티션 과정 시각화 (Pivot: 15)]**
+```text
+Initial: [ 31, 8, 48, 73, 11, 3, 20, 15 ] (Pivot: 15)
+1. 15보다 작은 값들을 왼쪽으로 모음:
+   [ 8, 11, 3, | 15 |, 31, 48, 20, 73 ]
+    (Small)   (Pivot)     (Large)
+2. 왼쪽 [8, 11, 3]과 오른쪽 [31, 48, 20, 73]에 대해 각각 Quick Sort 재귀 호출
+```
+
+- **분할 (Divide)**: 배열에서 하나의 원소(피벗)를 골라, 피벗보다 작은 원소들은 왼쪽으로, 큰 원소들은 오른쪽으로 옮깁니다. (**Partition** 과정)
+- **정복 (Conquer)**: 피벗을 기준으로 나뉜 두 부분 배열을 재귀적으로 정렬합니다.
+- **결합 (Combine)**: 제자리(In-place)에서 정렬이 이루어지므로 별도의 결합 과정이 필요 없습니다.
+- **시간 복잡도**:
+    - **평균/최선**: 피벗이 배열을 거의 균등하게 나눌 때  $\Theta(n \log\_{2}{n})$  입니다.
+    - **최악**: 이미 정렬된 배열에서 매번 최솟값이나 최댓값을 피벗으로 잡을 때  $\Theta(n^{2})$  입니다.
+- **피벗 선택 전략**: 최악의 경우를 방지하기 위해 배열의 첫 값, 중간 값, 끝 값 중 중간값을 피벗으로 선택하는 **Median-of-Three** 전략 등을 사용합니다.
+
+```python
+def quick_sort(arr, low, high):
+    if low \lt high:
+        p = partition(arr, low, high)
+        quick_sort(arr, low, p - 1)
+        quick_sort(arr, p + 1, high)
+
+def partition(arr, low, high):
+    pivot = arr[high]
+    i = low - 1
+    for j in range(low, high):
+        if arr[j] \le pivot:
+            i += 1
+            arr[i], arr[j] = arr[j], arr[i]
+    arr[i + 1], arr[high] = arr[high], arr[i + 1]
+    return i + 1
+```
 ```
