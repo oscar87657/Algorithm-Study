@@ -105,3 +105,28 @@ Item 3: 120$ / 30kg ($4/kg)
 ```
 
 - **복잡도 분석**: 물건을 가치 비율 순으로 정렬하는 데  $O(n \log\_{2}{n})$  의 시간이 소요됩니다.
+
+### 2.3 회의실 배정 (Activity Selection)
+한 개의 회의실에서 가장 많은 회의를 열 수 있도록 스케줄을 짜는 문제입니다.
+
+- **그리디 전략**: **종료 시간 (Finish Time)** 이 가장 빠른 회의부터 순서대로 선택합니다.
+- **선택 기준의 정당성**: 회의가 빨리 끝날수록 다음 회의를 시작할 수 있는 여유 시간이 더 많이 확보되기 때문에 가장 많은 회의를 선택할 수 있게 됩니다. (시작 시간이나 짧은 시간 기준은 최적해를 보장하지 않음)
+
+**[작동 로직 (Python)]**
+```python
+def activity_selection(meetings):
+    # 종료 시간 기준으로 정렬
+    meetings.sort(key=lambda x: x[1])
+    
+    last_finish_time = 0
+    selected_meetings = []
+    
+    for start, finish in meetings:
+        if start \ge last_finish_time:
+            selected_meetings.append((start, finish))
+            last_finish_time = finish
+            
+    return selected_meetings
+```
+
+- **복잡도 분석**: 종료 시간 기준 정렬에  $O(n \log\_{2}{n})$ , 순차 선택에  $O(n)$  이 소요되어 총  $O(n \log\_{2}{n})$  입니다.
