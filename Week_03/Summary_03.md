@@ -136,7 +136,7 @@ min_val = heapq.heappop(heap) # 최솟값 추출: O(log n)
 이 파트의 정렬 알고리즘들은 모두  $T(n) = T(n-1) + \Theta(n)$  이라는 공통된 재귀적 구조를 가집니다.
 
 ### 3.1 선택 정렬 (Selection Sort)
-전체 원소 중 가장 큰(또는 작은) 값을 찾아 정해진 위치로 보내는 방식입니다.
+전체 원소 중 최대값을 찾아 정해진 위치(맨 뒤)로 보내는 방식입니다.
 
 **[작동 원리 시각화]**
 ```text
@@ -147,8 +147,17 @@ min_val = heapq.heappop(heap) # 최솟값 추출: O(log n)
 [ 1 | 2 | 4 | 3 ]  (Step 2: 다음 최소값 2를 이동, 정렬 부분: [1, 2])
 ```
 
-- **개념**: 미정렬 부분에서 최대값을 찾아 맨 뒤(또는 최소값을 찾아 맨 앞)의 원소와 교체합니다.
+- **개념**: 미정렬 부분에서 최대값을 찾아 맨 뒤의 원소와 교체합니다.
 - **복잡도 분석**: 데이터의 구성과 관계없이 항상  $(n-1) + (n-2) + \dots + 1$  회의 비교를 수행하므로  $\Theta(n^{2})$  입니다.
+- **간결한 구현**:
+```python
+def selection_sort(arr):
+    for last in range(len(arr) - 1, 0, -1):
+        max_idx = 0
+        for i in range(1, last + 1):
+            if arr[i] > arr[max_idx]: max_idx = i
+        arr[max_idx], arr[last] = arr[last], arr[max_idx]
+```
 
 ### 3.2 버블 정렬 (Bubble Sort)
 인접한 두 원소를 비교하여 정렬 순서가 맞지 않으면 서로 교환하는 방식입니다.
@@ -162,7 +171,16 @@ min_val = heapq.heappop(heap) # 최솟값 추출: O(log n)
 ```
 
 - **개념**: 한 번의 패스(Pass)를 거치면 가장 큰 값이 배열의 끝으로 이동합니다.
-- **복잡도 분석**: 최악과 평균의 경우  $\Theta(n^{2})$  이며, 교환이 발생하지 않을 때 조기 종료하도록 최적화하면 최선의 경우  $\Theta(n)$  이 가능합니다.
+- **복잡도 분석**: 최악과 평균의 경우  $\Theta(n^{2})$  이며, 최선의 경우  $\Theta(n)$  입니다.
+- **간결한 구현**:
+```python
+def bubble_sort(arr):
+    n = len(arr)
+    for last in range(n - 1, 0, -1):
+        for i in range(last):
+            if arr[i] > arr[i + 1]:
+                arr[i], arr[i + 1] = arr[i + 1], arr[i]
+```
 
 ### 3.3 삽입 정렬 (Insertion Sort)
 이미 정렬된 부분에 새로운 원소를 적절한 위치에 '삽입'하는 방식입니다.
@@ -179,14 +197,22 @@ min_val = heapq.heappop(heap) # 최솟값 추출: O(log n)
     - **기본 단계 (Base Case)**: 원소가 하나인 배열  $A[1]$  은 이미 정렬되어 있습니다.
     - **귀납 가정**:  $A[1 \dots k]$  가 정렬되어 있다고 가정합니다.
     - **귀납 단계**:  $A[k+1]$  을 정렬된  $A[1 \dots k]$  의 적절한 위치에 삽입하면  $A[1 \dots k+1]$  도 정렬된 상태가 됩니다.
-- **복잡도 분석**:
-    - **최악 (역순 정렬)**:  $\Theta(n^{2})$ 
-    - **최선 (이미 정렬)**: 비교 한 번씩만 수행하므로  ** $\Theta(n)$ **. 거의 정렬된 데이터에서 매우 빠릅니다.
+- **복잡도 분석**: 최악은  $\Theta(n^{2})$ , 최선(이미 정렬)은  $\Theta(n)$  입니다.
+- **간결한 구현**:
+```python
+def insertion_sort(arr):
+    for i in range(1, len(arr)):
+        key, j = arr[i], i - 1
+        while j \ge 0 and arr[j] \gt key:
+            arr[j + 1] = arr[j]
+            j -= 1
+        arr[j + 1] = key
+```
 
 ### 3.4 기초 정렬의 재귀적 구조 비교
-모든 기초 정렬은 한 단계를 수행할 때마다 정렬해야 할 문제의 크기가  $n$  에서  $n-1$  로 줄어듭니다.
+모든 기초 정렬은 한 단계를 수행할 때마다 문제의 크기가  $n$  에서  $n-1$  로 줄어듭니다.
 
-| 알고리즘 | 작업 시점 | 주요 작업 ($ \Theta(n) $) |
+| 알고리즘 | 작업 시점 | 주요 작업 ( $\Theta(n)$ ) |
 | :--- | :--- | :--- |
 | **선택 정렬** | 재귀 호출 전 | 최대값 찾기 및 교환 |
 | **버블 정렬** | 재귀 호출 전 | 인접 비교를 통한 최대값 이동 |
@@ -195,9 +221,9 @@ min_val = heapq.heappop(heap) # 최솟값 추출: O(log n)
 ```python
 # 삽입 정렬의 재귀적 구조 예시
 def recursive_insertion_sort(arr, n):
-    if n <= 1: return
+    if n \le 1: return
     recursive_insertion_sort(arr, n - 1) # (n-1)개를 먼저 정렬
-    insert(arr, n) # 마지막 원소를 정렬된 부분에 삽입 (작업 시점: 후)
+    insert(arr, n) # 마지막 원소를 정렬된 부분에 삽입
 ```
 
 ---
