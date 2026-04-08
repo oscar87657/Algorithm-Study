@@ -11,7 +11,7 @@
 4. [0-1 배낭 문제 (0-1 Knapsack)](#knapsack)
 5. [동전 거스름돈 (Coin Change - DP)](#coin)
 6. [모든 쌍 최단 경로 (Floyd-Warshall)](#floyd)
-7. [편집 거리 (Edit Distance) (TBA)](#edit)
+7. [편집 거리 (Edit Distance)](#edit)
 8. [성능 요약 및 알고리즘 비교 (TBA)](#comparison)
 
 ---
@@ -293,4 +293,64 @@ def floyd_warshall(graph, v):
                     dist[i][j] = dist[i][k] + dist[k][j]
                     
     return dist
+```
+
+---
+
+<a id="edit"></a>
+## 7. 편집 거리 (Edit Distance) (#edit)
+
+**편집 거리 (Levenshtein Distance)** 는 한 문자열을 다른 문자열로 변환하는 데 필요한 최소 연산 횟수를 구하는 알고리즘입니다.
+
+### 7.1 세 가지 허용 연산
+모든 연산의 비용은 **1**로 가정합니다.
+1.  **삽입 (Insert)**: 문자열에 새로운 문자를 추가합니다.
+2.  **삭제 (Delete)**: 문자열의 문자를 제거합니다.
+3.  **대체 (Replace)**: 문자열의 한 문자를 다른 문자로 바꿉니다.
+
+### 7.2 점화식
+ $E[i, j]$  를 **" $X$ 의  $i$ 번째 문자까지를  $Y$ 의  $j$ 번째 문자까지로 만드는 최소 비용"** 이라 정의합니다.
+
+$$
+E[i, j] = \begin{cases}
+j & \text{if } i = 0 \text{ (공백에서 Y[j]까지 모두 삽입)} \\
+i & \text{if } j = 0 \text{ (X[i]에서 공백까지 모두 삭제)} \\
+E[i-1, j-1] & \text{if } x_{i} = y_{j} \text{ (연산 불필요)} \\
+1 + \min(E[i-1, j], E[i, j-1], E[i-1, j-1]) & \text{otherwise}
+\end{cases}
+$$
+
+- ** $E[i-1, j] + 1$ **: 삭제 (Delete)
+- ** $E[i, j-1] + 1$ **: 삽입 (Insert)
+- ** $E[i-1, j-1] + 1$ **: 대체 (Replace)
+
+### 7.3 실행 예시 및 테이블 (kitten → sitting)
+
+|  $E$  | ε | s | i | t | t | i | n | g |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **ε** | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
+| **k** | 1 | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
+| **i** | 2 | 2 | 1 | 2 | 3 | 4 | 5 | 6 |
+| ... | ... | ... | ... | ... | ... | ... | ... | ... |
+| **n** | 6 | 6 | 5 | 4 | 3 | 3 | 2 | **3** |
+
+- **최종 결과**: 3 (k→s 교체, e→i 교체, g 삽입)
+- **시간 복잡도**: 두 문자열의 길이를  $m, n$  이라 할 때  $O(mn)$  입니다.
+
+**[작동 로직 (Python)]**
+```python
+def edit_distance(x, y):
+    m, n = len(x), len(y)
+    e = [[0] * (n + 1) for _ in range(m + 1)]
+    
+    for i in range(m + 1): e[i][0] = i
+    for j in range(n + 1): e[0][j] = j
+    
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if x[i-1] == y[j-1]:
+                e[i][j] = e[i-1][j-1]
+            else:
+                e[i][j] = 1 + min(e[i-1][j], e[i][j-1], e[i-1][j-1])
+    return e[m][n]
 ```
