@@ -7,9 +7,9 @@
 ## 📝 목차
 1. [기본 자료구조 리뷰 (DS Review)](#ds)
 2. [정렬 알고리즘 개요 (Sorting Landscape)](#landscape)
-3. [기초 정렬 알고리즘 ( $O(n^{2})$ )](#elementary)
-4. [고급 정렬 알고리즘 ( $O(n \log\_{2}{n})$ )](#advanced)
-5. [선형 시간 정렬 ( $O(n)$ )](#linear)
+3. [기초 정렬 알고리즘 (O(n^2))](#elementary)
+4. [고급 정렬 알고리즘 (O(n log n))](#advanced)
+5. [선형 시간 정렬 (O(n))](#linear)
 6. [정렬 알고리즘 성능 비교](#comparison)
 
 ---
@@ -21,6 +21,13 @@
 
 ### 1.1 연결 리스트 (Linked List)
 연결 리스트는 데이터와 다음 노드를 가리키는 포인터를 포함하는 **노드 (Node)** 들의 선형 시퀀스입니다.
+
+**[구조 시각화]**
+```text
+[ Data | Next ] ---> [ Data | Next ] ---> [ Data | None ]
+(Head Node)          (Intermediate)       (Tail Node)
+```
+
 - **구조와 특징**: 각 노드는 데이터 필드와 링크 필드로 구성되며, 메모리 상에 비연속적으로 존재할 수 있어 삽입과 삭제가 유연합니다.
 - **성능 분석**: 특정 위치의 원소를 찾거나 탐색하는 연산은 첫 노드부터 순차적으로 방문해야 하므로 최악의 경우  $O(n)$  의 시간이 소요됩니다.
 - **핵심 구조**:
@@ -33,6 +40,17 @@ class Node:
 
 ### 1.2 스택 (Stack)
 스택은 한쪽 끝에서만 데이터의 삽입과 삭제가 일어나는 **LIFO (Last-In, First-Out, 후입선출)** 방식의 자료구조입니다.
+
+**[구조 시각화]**
+```text
+|   Data C   |  <- Top (Last In, First Out)
+|------------|
+|   Data B   |
+|------------|
+|   Data A   |
++------------+
+```
+
 - **주요 연산**: 데이터를 쌓는  `push()`  와 가장 위의 데이터를 꺼내는  `pop()`  연산으로 구성됩니다.
 - **응용 사례**: 함수 호출의 시스템 스택(Recursion 관리), 수식 계산(역폴란드 표기법), 웹 브라우저의 뒤로 가기 기능 등에서 사용됩니다.
 - **간결한 구현 예시**:
@@ -44,6 +62,14 @@ stack.pop()        # pop: O(1)
 
 ### 1.3 큐 (Queue)
 큐는 리스트의 한쪽 끝에서는 삽입이, 반대쪽 끝에서는 삭제가 일어나는 **FIFO (First-In, First-Out, 선입선출)** 방식의 자료구조입니다.
+
+**[구조 시각화]**
+```text
+Exit (Front)                       Enter (Rear)
+     <--- [ Data A ] [ Data B ] [ Data C ] <---
+          (First In)            (Last In)
+```
+
 - **주요 연산**: 뒤쪽(Rear)에 데이터를 추가하는  `enqueue()`  와 앞쪽(Front)에서 데이터를 꺼내는  `dequeue()`  연산이 핵심입니다.
 - **응용 사례**: 운영체제의 프로세스 스케줄링, 네트워크 패킷 버퍼링, 너비 우선 탐색(BFS)의 방문 노드 관리 등에 필수적입니다.
 - **간결한 구현 예시**:
@@ -56,6 +82,16 @@ queue.popleft()    # dequeue: O(1)
 
 ### 1.4 힙 (Heap)
 힙은 **완전 이진 트리 (Complete Binary Tree)** 의 일종으로, 부모와 자식 노드 간의 키값 대소 관계를 유지하는 자료구조입니다.
+
+**[구조 시각화 (Min Heap)]**
+```text
+        [ 10 ]             (Root / Minimum)
+       /      \
+    [ 20 ]   [ 30 ]        (Parent >= Child)
+    /    \
+ [ 40 ] [ 50 ]             (Complete Binary Tree)
+```
+
 - **힙 속성 (Heap Property)**:
     - **최대 힙 (Max Heap)**: 모든 노드에 대해  $\text{key(parent)} \ge \text{key(child)}$  를 만족합니다.
     - **최소 힙 (Min Heap)**: 모든 노드에 대해  $\text{key(parent)} \le \text{key(child)}$  를 만족합니다.
