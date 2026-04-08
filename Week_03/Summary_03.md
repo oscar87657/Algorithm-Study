@@ -301,9 +301,15 @@ def quick_sort(arr):
 ### 4.3 힙 정렬 (Heap Sort)
 배열을 **최대 힙 (Max Heap)** 으로 구성한 뒤, 루트(최대값)를 하나씩 꺼내 배열의 뒤부터 채우는 방식입니다.
 
-**[힙 정렬의 단계]**
-1.  **Build-Heap**: 무작위 배열을 힙 구조로 변환합니다. ( $O(n)$ )
-2.  **Extract-Max**: 루트를 마지막 원소와 교체하고 힙 크기를 줄인 뒤  `heapify`  를 수행합니다. ( $O(\log\_{2}{n})$ )
+**[작동 원리 시각화]**
+```text
+1. Build-Heap (배열을 힙으로)    2. Extract-Max (루트 추출 및 교체)
+      [ 9 ] (Root)               [ 3 ] (New Root) <--- [ 9 ] (Sorted)
+     /     \                    /     \
+  [ 7 ]   [ 8 ]     --->     [ 7 ]   [ 8 ]      --->  Heapify...
+  /   \                      /
+[ 3 ] [ 6 ]                [ 6 ]
+```
 
 - **복잡도**: 모든 경우에  $\Theta(n \log\_{2}{n})$  을 보장하며, 제자리 정렬이 가능합니다.
 - **간결한 구현**:
@@ -324,12 +330,50 @@ def heap_sort(arr):
 비교 기반 정렬의 하한인  $\Omega(n \log\_{2}{n})$  을 넘어서기 위해, 데이터의 특성(자릿수, 범위)을 이용합니다.
 
 ### 5.1 계수 정렬 (Counting Sort)
-원소의 빈도수를 직접 세어 위치를 결정합니다. 범위  $k$  가  $O(n)$  일 때  $\Theta(n)$  에 동작합니다.
+원소의 빈도수를 직접 세어 위치를 결정하는 정렬 방식입니다.
+
+**[작동 원리 시각화]**
+```text
+Input:  [ 2, 1, 2, 0 ]
+Count:  [ 0:1, 1:1, 2:2 ] (각 숫자의 개수 기록)
+Prefix: [ 0:1, 1:2, 2:4 ] (누적 합: 해당 숫자가 끝날 위치)
+Output: [ 0, 1, 2, 2 ]   (위치에 맞게 데이터 배치)
+```
+
+- **동작 조건**: 데이터 범위  $k$  가  $O(n)$  일 때  $\Theta(n)$  에 동작합니다.
+- **간결한 구현**:
+```python
+def counting_sort(arr, k): # k: 데이터의 최대값
+    count = [0] * (k + 1)
+    for x in arr: count[x] += 1
+    result = []
+    for i in range(k + 1):
+        result.extend([i] * count[i])
+    return result
+```
 
 ### 5.2 기수 정렬 (Radix Sort)
-낮은 자릿수부터 차례대로 **안정 정렬 (Stable Sort)** 을 수행하여 전체를 정렬합니다. 자릿수가  $d$  일 때  $\Theta(dn)$  이 소요됩니다.
+낮은 자릿수부터 차례대로 **안정 정렬 (Stable Sort)** 을 수행하여 전체를 정렬합니다.
 
----
+**[작동 원리 시각화]**
+```text
+[ 170, 045, 075, 090 ] (초기 데이터)
+Step 1: 1의 자리 정렬 -> [ 170, 090, 045, 075 ]
+Step 2: 10의 자리 정렬 -> [ 045, 170, 075, 090 ]
+Step 3: 100의 자리 정렬 -> [ 045, 075, 090, 170 ] (완료)
+```
+
+- **복잡도**: 자릿수가  $d$  일 때  $\Theta(dn)$  이 소요됩니다. ( $d$ 가 상수이면 선형 시간)
+- **간결한 구현**:
+```python
+def radix_sort(arr):
+    max_val = max(arr)
+    exp = 1 # 1, 10, 100... 자릿수
+    while max_val // exp \gt 0:
+        arr = counting_sort_for_radix(arr, exp)
+        exp *= 10
+    return arr
+```
 
 <a id="comparison"></a>
 ## 6. 정렬 알고리즘 성능 비교 (#comparison)
