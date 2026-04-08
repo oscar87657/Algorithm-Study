@@ -7,7 +7,7 @@
 ## 📝 목차
 1. [분할 정복(Divide and Conquer) 개요](#intro)
 2. [재귀 관계식과 마스터 정리](#analysis)
-3. [대표적인 분할 정복 알고리즘 (TBA)](#algorithms)
+3. [대표적인 분할 정복 알고리즘](#algorithms)
 4. [고급 분할 정복 알고리즘 (TBA)](#advanced)
 5. [분할 정복의 한계 (TBA)](#limitations)
 
@@ -113,3 +113,78 @@ Leaves:     T(1) T(1) ... T(1) (a^h개)     -> n^{\log_{b}{a}} * T(1)
     -  $a=1, b=2$  이므로  $n^{\log\_{2}{1}} = n^{0} = 1$ .
     -  $f(n) = \Theta(1)$  이므로 **Case 2**에 해당.
     - 결과:  $T(n) = \Theta(\log\_{2}{n})$ 
+
+---
+
+<a id="algorithms"></a>
+## 3. 대표적인 분할 정복 알고리즘 (#algorithms)
+
+분할 정복의 가장 전형적인 사례인 이진 탐색, 합병 정렬, 퀵 정렬의 작동 원리와 성능을 분석합니다.
+
+### 3.1 이진 탐색 (Binary Search)
+이미 정렬된 배열에서 특정 값을 찾을 때 탐색 범위를 절반씩 줄여나가는 알고리즘입니다.
+
+**[작동 원리 시각화 (Target: 7)]**
+```text
+Array: [ 1 | 3 | 5 | 7 | 9 | 11 | 13 ]
+Low: 0, High: 6, Mid: 3 (arr[3] = 7)
+-> Target 7 Found at index 3! (탐색 종료)
+```
+
+- **분할 (Divide)**: 배열의 중간 인덱스  `mid`  를 계산하여 두 부분으로 나눕니다.
+- **정복 (Conquer)**: 
+    -  `arr[mid]`  가 타겟과 같으면 탐색 성공.
+    - 타겟이 작으면 왼쪽 부분 배열, 크면 오른쪽 부분 배열을 재귀적으로 탐색합니다.
+- **결합 (Combine)**: 별도의 결합 과정이 필요 없으며, 찾은 결과(인덱스)를 상위 호출로 그대로 전달합니다.
+- **시간 복잡도**: 문제의 크기가 매 단계 절반으로 줄어들며 1번의 비교를 수행하므로  $T(n) = T(n/2) + \Theta(1) \rightarrow \Theta(\log\_{2}{n})$  입니다.
+
+```python
+def binary_search(arr, low, high, target):
+    if low \gt high: return -1
+    mid = (low + high) // 2
+    if arr[mid] == target:
+        return mid
+    elif arr[mid] \gt target:
+        return binary_search(arr, low, mid - 1, target)
+    else:
+        return binary_search(arr, mid + 1, high, target)
+```
+
+### 3.2 합병 정렬 (Merge Sort)
+데이터를 원소가 하나인 상태까지 쪼갠 뒤, 정렬된 상태를 유지하며 다시 합치는 알고리즘입니다.
+
+**[합병(Merge) 과정 시각화]**
+```text
+[ 3 | 9 ]  [ 2 | 7 ]  (정렬된 두 부분 배열)
+  ^          ^
+ (i)        (j)
+1. 3 \gt 2 -> [ 2 ], j++
+2. 3 \lt 7 -> [ 2, 3 ], i++
+3. 9 \gt 7 -> [ 2, 3, 7 ], j++
+4. i 포인터 남은 원소 추가 -> [ 2, 3, 7, 9 ]
+```
+
+- **분할 (Divide)**: 배열을  $\lfloor n/2 \rfloor$  지점에서 두 개의 부분 배열로 나눕니다.
+- **정복 (Conquer)**: 각 부분 배열의 크기가 1이 될 때까지 재귀적으로 합병 정렬을 수행합니다.
+- **결합 (Combine)**: 정렬된 두 부분 배열을 비교하여 하나의 정렬된 배열로 합치는 **Merge** 작업을 수행합니다. 이 과정에서  $O(n)$  의 시간과 추가 메모리가 소요됩니다.
+- **시간 복잡도**:  $T(n) = 2T(n/2) + \Theta(n)$  이므로 마스터 정리에 의해 항상  $\Theta(n \log\_{2}{n})$  을 보장합니다.
+- **특징**: 데이터의 초기 상태와 관계없이 일정한 성능을 보장하는 **안정 정렬(Stable Sort)** 입니다.
+
+```python
+def merge_sort(arr):
+    if len(arr) \le 1: return arr
+    mid = len(arr) // 2
+    left = merge_sort(arr[:mid])
+    right = merge_sort(arr[mid:])
+    return merge(left, right)
+
+def merge(left, right):
+    result, i, j = [], 0, 0
+    while i \lt len(left) and j \lt len(right):
+        if left[i] \le right[j]:
+            result.append(left[i]); i += 1
+        else:
+            result.append(right[j]); j += 1
+    result.extend(left[i:]); result.extend(right[j:])
+    return result
+```
