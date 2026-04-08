@@ -313,7 +313,7 @@ def quick_sort(arr):
 
 - **상세 복잡도 분석**:
     1.  **Build-Heap Phase**: 무작위 배열을 힙으로 만드는 과정은 단순 계산 시  $O(n \log\_{2}{n})$  으로 보이나, 실제로는 각 노드의 높이에 비례하는 작업의 합이므로  ** $O(n)$ **  에 가능합니다.
-    2.  **Sorting Phase**: 루트를 추출하고 남은 원소들에 대해  `heapify`  를 수행하는 과정이  $n-1$  번 반복됩니다. 각  `heapify`  는 트리의 높이인  $O(\log\_{2}{n})$  이 소요됩니다.
+    2.  **Sorting Phase**: 루트를 추출하고 남은 원소들에 대해  `heapify`  를 수행하는 과정이  $n - 1$  번 반복됩니다. 각  `heapify`  는 트리의 높이인  $O(\log\_{2}{n})$  이 소요됩니다.
 - **최종 복잡도**: 모든 경우에 대해  $\Theta(n + n \log\_{2}{n}) = \Theta(n \log\_{2}{n})$  을 보장합니다.
 - **간결한 구현**:
 ```python
@@ -356,6 +356,10 @@ def counting_sort(arr, k): # k: 데이터의 최대값
     for i in range(k + 1):
         result.extend([i] * count[i]) # O(n + k)
     return result
+
+def stable_counting_sort(arr, exp):
+    # 각 자릿수 정렬을 위한 안정 계수 정렬 구현 생략 (핵심 개념 위주)
+    pass
 ```
 
 ### 5.2 기수 정렬 (Radix Sort)
@@ -385,6 +389,8 @@ def radix_sort(arr):
     return arr
 ```
 
+---
+
 <a id="comparison"></a>
 ## 6. 정렬 알고리즘 성능 비교 (#comparison)
 
@@ -393,11 +399,11 @@ def radix_sort(arr):
 | **선택 정렬** |  $O(n^{2})$  |  $O(n^{2})$  |  $O(n^{2})$  |  $O(1)$  | No |
 | **버블 정렬** |  $O(n)$  |  $O(n^{2})$  |  $O(n^{2})$  |  $O(1)$  | Yes |
 | **삽입 정렬** |  ** $O(n)$ ** |  $O(n^{2})$  |  $O(n^{2})$  |  $O(1)$  | Yes |
-| **병합 정렬** |  $O(n \log n)$  |  $O(n \log n)$  |  $O(n \log n)$  |  ** $O(n)$ ** | Yes |
-| **퀵 정렬** |  $O(n \log n)$  |  $O(n \log n)$  |  ** $O(n^{2})$ ** |  $O(\log n)$  | No |
-| **힙 정렬** |  $O(n \log n)$  |  $O(n \log n)$  |  $O(n \log n)$  |  $O(1)$  | No |
-| **계수 정렬** |  $O(n+k)$  |  $O(n+k)$  |  $O(n+k)$  |  $O(k)$  | Yes |
-| **기수 정렬** |  $O(nk)$  |  $O(nk)$  |  $O(nk)$  |  $O(n+k)$  | Yes |
+| **병합 정렬** |  $O(n \log\_{2}{n})$  |  $O(n \log\_{2}{n})$  |  $O(n \log\_{2}{n})$  |  ** $O(n)$ ** | Yes |
+| **퀵 정렬** |  $O(n \log\_{2}{n})$  |  $O(n \log\_{2}{n})$  |  ** $O(n^{2})$ ** |  $O(\log\_{2}{n})$  | No |
+| **힙 정렬** |  $O(n \log\_{2}{n})$  |  $O(n \log\_{2}{n})$  |  $O(n \log\_{2}{n})$  |  $O(1)$  | No |
+| **계수 정렬** |  $O(n + k)$  |  $O(n + k)$  |  $O(n + k)$  |  $O(k)$  | Yes |
+| **기수 정렬** |  $O(nk)$  |  $O(nk)$  |  $O(nk)$  |  $O(n + k)$  | Yes |
 
 ---
 
