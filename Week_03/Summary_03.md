@@ -229,91 +229,105 @@ def recursive_insertion_sort(arr, n):
 ---
 
 <a id="advanced"></a>
-## 4. 고급 정렬 알고리즘 ( $O(n \log\_{2}{n})$ ) (#advanced)
+## 4. 고급 정렬 알고리즘 (O(n log n)) (#advanced)
+
+고급 정렬 알고리즘은 대부분 **분할 정복 (Divide and Conquer)** 패러다임을 사용하며, 비교 기반 정렬의 하한선에 근접한  $O(n \log\_{2}{n})$  의 시간 복잡도를 달성합니다.
 
 ### 4.1 병합 정렬 (Merge Sort)
-반으로 나누고(Divide), 정렬하고(Conquer), 합치는(Combine) 분할 정복 알고리즘입니다.
-- **점화식**: $T(n) = 2T(n/2) + \Theta(n) \implies \Theta(n \log\_{2}{n})$
-- **특징**: 데이터 상태에 관계없이 항상 일정한 성능을 보장하지만, 병합을 위한 **추가 메모리 ($O(n)$)** 가 필요합니다.
+문제를 더 이상 나눌 수 없을 때까지 반으로 나누고, 정렬하며 다시 합치는 방식입니다.
 
+**[분할 정복 과정 시각화]**
+```text
+      [ 38, 27, 43, 3, 9, 82, 10 ]      (Divide)
+      /             \
+[ 38, 27, 43 ]     [ 3, 9, 82, 10 ]     (Split)
+    /      \          /       \
+[ 38 ] [ 27, 43 ] [ 3, 9 ] [ 82, 10 ]   (Recursive Base)
+    \      /          \       /
+[ 27, 38, 43 ]     [ 3, 9, 10, 82 ]     (Merge/Conquer)
+      \             /
+      [ 3, 9, 10, 27, 38, 43, 82 ]      (Combine)
+```
+
+- **특징**: 데이터의 초기 상태와 관계없이 항상  $\Theta(n \log\_{2}{n})$  을 보장하지만, 병합 과정에서  ** $O(n)$  의 추가 메모리** 가 필요합니다.
+- **점화식**:  $T(n) = 2T(n/2) + \Theta(n)$ 
+- **간결한 구현**:
 ```python
-def merge_sort(arr, p, r):
-    if p < r:
-        q = (p + r) // 2
-        merge_sort(arr, p, q)
-        merge_sort(arr, q + 1, r)
-        merge(arr, p, q, r)
+def merge_sort(arr):
+    if len(arr) \le 1: return arr
+    mid = len(arr) // 2
+    left = merge_sort(arr[:mid])
+    right = merge_sort(arr[mid:])
+    return merge(left, right)
 
-def merge(arr, p, q, r):
-    i, j, tmp = p, q + 1, []
-    while i <= q and j <= r:
-        if arr[i] <= arr[j]: tmp.append(arr[i]); i += 1
-        else: tmp.append(arr[j]); j += 1
-    while i <= q: tmp.append(arr[i]); i += 1
-    while j <= r: tmp.append(arr[j]); j += 1
-    for k in range(len(tmp)): arr[p + k] = tmp[k]
+def merge(left, right):
+    result = []
+    i = j = 0
+    while i \lt len(left) and j \lt len(right):
+        if left[i] \le right[j]:
+            result.append(left[i]); i += 1
+        else:
+            result.append(right[j]); j += 1
+    result.extend(left[i:]); result.extend(right[j:])
+    return result
 ```
 
 ### 4.2 퀵 정렬 (Quick Sort)
-피벗(Pivot)을 기준으로 작은 값은 왼쪽, 큰 값은 오른쪽으로 나눕니다.
-- **복잡도**: 평균 **$\Theta(n \log\_{2}{n})$**. 최악(피벗이 매번 최소/최대일 때) **$O(n^{2})$**.
-- **In-place Partition**: 추가 리스트 없이 포인터 `i`, `j` 만 사용하여 자리를 바꿉니다.
+기준 원소인 **피벗 (Pivot)** 을 선택하여 이를 기준으로 작은 값과 큰 값을 분할하는 방식입니다.
 
+**[파티션 과정 시각화 (Pivot: 15)]**
+```text
+[ 31, 8, 48, 73, 11, 3, 20, 15 ] (Pivot: 15)
+  ^--- i (작은 값들의 경계)
+[ 8, 11, 3, | 15 |, 31, 48, 20, 73 ]
+ (Small)    (Pivot)     (Large)
+```
+
+- **복잡도 분석**:
+    - **평균**: 피벗이 균형 있게 나눌 경우  $\Theta(n \log\_{2}{n})$ .
+    - **최악**: 이미 정렬된 배열에서 피벗을 끝 값으로 선택할 경우  $O(n^{2})$ .
+- **핵심 특징**: 추가 메모리를 거의 쓰지 않는 **제자리 정렬 (In-place)** 이며, 평균적으로 가장 빠릅니다.
+- **간결한 구현**:
 ```python
-def quick_sort(arr, p, r):
-    if p < r:
-        q = partition(arr, p, r)
-        quick_sort(arr, p, q - 1)
-        quick_sort(arr, q + 1, r)
-
-def partition(arr, p, r):
-    pivot, i = arr[r], p - 1
-    for j in range(p, r):
-        if arr[j] <= pivot:
-            i += 1
-            arr[i], arr[j] = arr[j], arr[i]
-    arr[i + 1], arr[r] = arr[r], arr[i + 1]
-    return i + 1
+def quick_sort(arr):
+    if len(arr) \le 1: return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x \lt pivot]
+    mid = [x for x in arr if x == pivot]
+    right = [x for x in arr if x \gt pivot]
+    return quick_sort(left) + mid + quick_sort(right)
 ```
 
 ### 4.3 힙 정렬 (Heap Sort)
-배열을 힙으로 만든 뒤 루트를 하나씩 추출합니다.
-- **단계**: 힙 구축 ( `buildHeap` , $O(n)$ ) $\to$ 루트 추출 및 재정비 ( $n \times \log n$ ).
-- **특징**: 추가 메모리가 필요 없는 **제자리 정렬 (In-place)** 이면서 항상 $O(n \log n)$ 을 유지합니다.
+배열을 **최대 힙 (Max Heap)** 으로 구성한 뒤, 루트(최대값)를 하나씩 꺼내 배열의 뒤부터 채우는 방식입니다.
 
+**[힙 정렬의 단계]**
+1.  **Build-Heap**: 무작위 배열을 힙 구조로 변환합니다. ( $O(n)$ )
+2.  **Extract-Max**: 루트를 마지막 원소와 교체하고 힙 크기를 줄인 뒤  `heapify`  를 수행합니다. ( $O(\log\_{2}{n})$ )
+
+- **복잡도**: 모든 경우에  $\Theta(n \log\_{2}{n})$  을 보장하며, 제자리 정렬이 가능합니다.
+- **간결한 구현**:
 ```python
-def heap_sort(arr):
-    n = len(arr)
-    for i in range(n // 2 - 1, -1, -1): heapify(arr, n, i) # buildHeap
-    for i in range(n - 1, 0, -1):
-        arr[0], arr[i] = arr[i], arr[0] # swap
-        heapify(arr, i, 0)
+import heapq
 
-def heapify(arr, n, i):
-    smallest = i
-    l, r = 2 * i + 1, 2 * i + 2
-    if l < n and arr[l] < arr[smallest]: smallest = l
-    if r < n and arr[r] < arr[smallest]: smallest = r
-    if smallest != i:
-        arr[i], arr[smallest] = arr[smallest], arr[i]
-        heapify(arr, n, smallest)
+def heap_sort(arr):
+    h = []
+    for value in arr:
+        heapq.heappush(h, value) # Min-Heap 삽입
+    return [heapq.heappop(h) for _ in range(len(h))]
 ```
 
 ---
 
 <a id="linear"></a>
-## 5. 선형 시간 정렬 ( $O(n)$ ) (#linear)
-
-비교를 하지 않고 데이터의 특성을 이용합니다.
+## 5. 선형 시간 정렬 (O(n)) (#linear)
+비교 기반 정렬의 하한인  $\Omega(n \log\_{2}{n})$  을 넘어서기 위해, 데이터의 특성(자릿수, 범위)을 이용합니다.
 
 ### 5.1 계수 정렬 (Counting Sort)
-각 숫자의 빈도수를 세어 위치를 결정합니다.
-- **조건**: 데이터 범위 $k$ 가 $O(n)$ 일 때.
-- **안정성**: 뒤에서부터 배치함으로써 안정 정렬을 유지합니다.
+원소의 빈도수를 직접 세어 위치를 결정합니다. 범위  $k$  가  $O(n)$  일 때  $\Theta(n)$  에 동작합니다.
 
 ### 5.2 기수 정렬 (Radix Sort)
-가장 낮은 자릿수부터 **안정 정렬** 을 반복하여 전체를 정렬합니다.
-- **복잡도**: 자릿수 $k$ 가 상수일 때 **$\Theta(n)$**.
+낮은 자릿수부터 차례대로 **안정 정렬 (Stable Sort)** 을 수행하여 전체를 정렬합니다. 자릿수가  $d$  일 때  $\Theta(dn)$  이 소요됩니다.
 
 ---
 
@@ -322,17 +336,18 @@ def heapify(arr, n, i):
 
 | 알고리즘 | 최선 | 평균 | 최악 | 공간 | 안정성 |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **선택 정렬** | $O(n^{2})$ | $O(n^{2})$ | $O(n^{2})$ | $O(1)$ | No |
-| **버블 정렬** | $O(n)$ | $O(n^{2})$ | $O(n^{2})$ | $O(1)$ | Yes |
-| **삽입 정렬** | **$O(n)$** | $O(n^{2})$ | $O(n^{2})$ | $O(1)$ | Yes |
-| **병합 정렬** | $O(n \log n)$ | $O(n \log n)$ | $O(n \log n)$ | **$O(n)$** | Yes |
-| **퀵 정렬** | $O(n \log n)$ | $O(n \log n)$ | **$O(n^{2})$** | $O(\log n)$ | No |
-| **힙 정렬** | $O(n \log n)$ | $O(n \log n)$ | $O(n \log n)$ | $O(1)$ | No |
-| **계수 정렬** | $O(n)$ | $O(n)$ | $O(n)$ | $O(k)$ | Yes |
+| **선택 정렬** |  $O(n^{2})$  |  $O(n^{2})$  |  $O(n^{2})$  |  $O(1)$  | No |
+| **버블 정렬** |  $O(n)$  |  $O(n^{2})$  |  $O(n^{2})$  |  $O(1)$  | Yes |
+| **삽입 정렬** |  ** $O(n)$ ** |  $O(n^{2})$  |  $O(n^{2})$  |  $O(1)$  | Yes |
+| **병합 정렬** |  $O(n \log n)$  |  $O(n \log n)$  |  $O(n \log n)$  |  ** $O(n)$ ** | Yes |
+| **퀵 정렬** |  $O(n \log n)$  |  $O(n \log n)$  |  ** $O(n^{2})$ ** |  $O(\log n)$  | No |
+| **힙 정렬** |  $O(n \log n)$  |  $O(n \log n)$  |  $O(n \log n)$  |  $O(1)$  | No |
+| **계수 정렬** |  $O(n+k)$  |  $O(n+k)$  |  $O(n+k)$  |  $O(k)$  | Yes |
+| **기수 정렬** |  $O(nk)$  |  $O(nk)$  |  $O(nk)$  |  $O(n+k)$  | Yes |
 
 ---
 
 ## 💡 요약 및 시사점
-1. 정렬 알고리즘은 **시간-공간-안정성** 사이의 트레이드오프(Trade-off)를 이해하는 것이 핵심입니다.
-2. 데이터가 거의 정렬된 경우 **삽입 정렬**이, 추가 메모리 없이 최악을 방지하려면 **힙 정렬**이 유리합니다.
-3. 비교 기반 정렬의 물리적 한계($n \log n$)를 극복하기 위해서는 데이터의 도메인 지식(범위, 자릿수)을 활용해야 합니다.
+1.  **트레이드오프**: 병합 정렬은 성능이 일정하지만 공간을 더 사용하고, 퀵 정렬은 평균적으로 빠르지만 최악의 경우가 존재합니다.
+2.  **안정성 (Stability)**: 값이 같은 원소의 순서가 중요한 경우 삽입, 병합 정렬 등을 고려해야 합니다.
+3.  **데이터 특성 활용**: 데이터가 거의 정렬된 경우 **삽입 정렬** 이, 범위가 제한적인 경우 **계수 정렬** 이 가장 효율적입니다.
