@@ -188,6 +188,8 @@ def merge(left, right):
     result.extend(left[i:]); result.extend(right[j:])
     return result
 
+---
+
 ### 3.3 퀵 정렬 (Quick Sort)
 기준 원소인 **피벗 (Pivot)** 을 선택하여 배열을 두 그룹으로 나누고 재귀적으로 정렬하는 방식입니다. 평균적으로 가장 빠른 속도를 자랑합니다.
 
