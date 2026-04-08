@@ -7,7 +7,7 @@
 ## 📝 목차
 1. [동적 계획법(Dynamic Programming) 개요](#intro)
 2. [기초 DP 사례](#basic)
-3. [최장 공통 부분 수열 (LCS) (TBA)](#lcs)
+3. [최장 공통 부분 수열 (LCS)](#lcs)
 4. [0-1 배낭 문제 (0-1 Knapsack) (TBA)](#knapsack)
 5. [모든 쌍 최단 경로 (Floyd-Warshall) (TBA)](#floyd)
 6. [편집 거리 (Edit Distance) (TBA)](#edit)
@@ -112,4 +112,56 @@ def matrix_path(m, n):
         for j in range(1, n + 1):
             c[i][j] = m[i-1][j-1] + max(c[i-1][j], c[i][j-1])
     return c[n][n]
+```
+
+---
+
+<a id="lcs"></a>
+## 3. 최장 공통 부분 수열 (LCS) (#lcs)
+
+**최장 공통 부분 수열 (Longest Common Subsequence, LCS)** 은 두 수열이 주어졌을 때, 두 수열 모두의 부분 수열이 되는 수열 중 가장 긴 것을 찾는 문제입니다. (연속적이지 않아도 됨)
+
+### 3.1 점화식 (Recurrence Relation)
+두 문자열  $X = \langle x\_{1}, x\_{2}, \dots, x\_{m} \rangle$  와  $Y = \langle y\_{1}, y\_{2}, \dots, y\_{n} \rangle$  에 대하여,  $c[i, j]$  를  $X\_{i}$  와  $Y\_{j}$  의 LCS 길이라 정의합니다.
+
+$$
+c[i, j] = \begin{cases}
+0 & \text{if } i=0 \text{ or } j=0 \\
+c[i-1, j-1] + 1 & \text{if } i, j \gt 0 \text{ and } x_{i} = y_{j} \\
+\max(c[i-1, j], c[i, j-1]) & \text{if } i, j \gt 0 \text{ and } x_{i} \neq y_{j}
+\end{cases}
+$$
+
+- **핵심 로직**:
+    - 마지막 문자가 서로 같으면: 해당 문자를 제외한 앞부분의 LCS 길이에 1을 더합니다.
+    - 마지막 문자가 서로 다르면: 한쪽 문자를 각각 제외해보고 더 큰 값을 선택합니다.
+
+### 3.2 작동 과정 및 역추적 (Traceback)
+DP 테이블을 채운 후,  $c[m, n]$  에서 시작하여 대각선(문자가 같을 때) 또는 위/왼쪽(문자가 다를 때)으로 이동하며 실제 LCS를 추출합니다.
+
+**[LCS 테이블 예시 (X: ABCB, Y: BDCA)]**
+
+|  $c$  | 0 | B | D | C | A |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **0** | 0 | 0 | 0 | 0 | 0 |
+| **A** | 0 | 0 | 0 | 0 | **1** |
+| **B** | 0 | **1** | 1 | 1 | 1 |
+| **C** | 0 | 1 | 1 | **2** | 2 |
+| **B** | 0 | 1 | 1 | 2 | 2 |
+
+- **복잡도**: 두 문자열의 길이를  $m, n$  이라 할 때 시간 및 공간 복잡도 모두  $\Theta(mn)$  입니다.
+
+**[작동 로직 (Python)]**
+```python
+def lcs(x, y):
+    m, n = len(x), len(y)
+    c = [[0] * (n + 1) for _ in range(m + 1)]
+    
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if x[i-1] == y[j-1]:
+                c[i][j] = c[i-1][j-1] + 1
+            else:
+                c[i][j] = max(c[i-1][j], c[i][j-1])
+    return c[m][n]
 ```
