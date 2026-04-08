@@ -9,9 +9,10 @@
 2. [기초 DP 사례](#basic)
 3. [최장 공통 부분 수열 (LCS)](#lcs)
 4. [0-1 배낭 문제 (0-1 Knapsack)](#knapsack)
-5. [모든 쌍 최단 경로 (Floyd-Warshall) (TBA)](#floyd)
-6. [편집 거리 (Edit Distance) (TBA)](#edit)
-7. [성능 요약 및 알고리즘 비교 (TBA)](#comparison)
+5. [동전 거스름돈 (Coin Change - DP)](#coin)
+6. [모든 쌍 최단 경로 (Floyd-Warshall) (TBA)](#floyd)
+7. [편집 거리 (Edit Distance) (TBA)](#edit)
+8. [성능 요약 및 알고리즘 비교 (TBA)](#comparison)
 
 ---
 
@@ -43,32 +44,6 @@ DP를 적용하기 위해서는 문제의 구조가 다음 두 가지 성질을 
     / \   / \                    / \   / \      부분 문제
   (D) (E)(F) (G)               (D) (E) (F) (G)
   (독립적인 구조)               (중복/공유 구조)
-```
-
-### 1.3 구현 전략 (Implementation Strategies)
-
-#### 1) 하향식 (Top-Down): 메모이제이션 (Memoization)
-재귀 호출을 사용하며, 계산된 결과를 메모리에 기록하여 중복 계산을 피하는 방식입니다. 필요한 부분 문제만 해결한다는 장점이 있습니다.
-
-#### 2) 상향식 (Bottom-Up): 타뷸레이션 (Tabulation)
-가장 작은 부분 문제부터 순서대로 테이블을 채워나가는 반복문 기반의 방식입니다. 시스템 스택 오버헤드가 없으며 모든 부분 문제를 체계적으로 해결합니다.
-
-**[구현 방식 비교]**
-```python
-# 1. Top-Down (Memoization)
-def fib_top_down(n, memo):
-    if n \le 2: return 1
-    if memo[n] != 0: return memo[n]
-    memo[n] = fib_top_down(n-1, memo) + fib_top_down(n-2, memo)
-    return memo[n]
-
-# 2. Bottom-Up (Tabulation)
-def fib_bottom_up(n):
-    table = [0] * (n + 1)
-    table[1] = table[2] = 1
-    for i in range(3, n + 1):
-        table[i] = table[i-1] + table[i-2]
-    return table[n]
 ```
 
 ---
@@ -223,4 +198,50 @@ def knapsack_01(weights, values, capacity):
     return k[n][capacity]
 ```
 
+---
 
+<a id="coin"></a>
+## 5. 동전 거스름돈 (Coin Change - DP) (#coin)
+
+주어진 동전 권종들로 특정 금액  $n$  을 만들 때, **사용되는 동전의 최소 개수**를 구하는 문제입니다. 5주차의 그리디 방식은 특정 조건에서만 성립하지만, DP는 모든 경우에 대해 최적해를 보장합니다.
+
+### 5.1 왜 DP인가? (Greedy vs DP)
+- **그리디 실패 사례**: 동전이 {1원, 10원, 16원}이고 거스름돈이 20원일 때.
+    - 그리디: 16 + 1 + 1 + 1 + 1 (5개)
+    - **최적해 (DP)**: 10 + 10 (**2개**)
+- **결론**: 그리디는 매 순간 가장 큰 동전만 고르지만, DP는 모든 조합을 고려하여 최적을 찾습니다.
+
+### 5.2 점화식 도출
+ $C[j]$  를 **"금액  $j$  를 만드는 데 필요한 최소 동전 개수"** 라 정의합니다.
+
+$$
+C[j] = \min_{d_{i} \le j} \{ C[j - d_{i}] + 1 \}
+$$
+
+- **논리**: "금액  $j$  를 만들려면, 현재 가진 동전  $d_{i}$  중 하나를 선택하고 나머지 금액  $(j - d_{i})$  에 대한 최적해에 1을 더한 값들 중 최솟값을 고른다."
+- **초기값**:  $C[0] = 0$  (0원을 만드는 동전은 0개)
+
+### 5.3 실행 과정 시각화 (동전: {1, 10, 16}, 목표: 20원)
+
+|  $j$ (금액)  | 0 | 1 | ... | 9 | 10 | 11 | ... | 16 | ... | 20 |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+|  **$C[j]$**  | 0 | 1 | ... | 9 | **1** | 2 | ... | **1** | ... | **2** |
+
+- **해석**:
+    - 금액 10은 동전 '10' 하나로 가능하므로  $C[10] = 1$ .
+    - 금액 20은  $C[20-10] + 1 = 2$  와  $C[20-16] + 1 = 5$  중 작은 값인 **2**를 선택.
+
+**[작동 로직 (Python)]**
+```python
+def coin_change_dp(coins, amount):
+    # 최댓값(무한대)으로 초기화
+    c = [float('inf')] * (amount + 1)
+    c[0] = 0
+    
+    for j in range(1, amount + 1):
+        for coin in coins:
+            if coin \le j:
+                c[j] = min(c[j], c[j - coin] + 1)
+                
+    return c[amount]
+```
