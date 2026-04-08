@@ -200,18 +200,36 @@ Frequencies: {A: 45, B: 13, C: 12, D: 16, E: 9, F: 5}
 ```python
 import heapq
 
-def huffman_encoding(frequencies):
-    # 빈도수를 우선순위 큐에 삽입
-    heap = [[weight, [char, ""]] for char, weight in frequencies.items()]
+class Node:
+    def __init__(self, char, freq):
+        self.char = char
+        self.freq = freq
+        self.left = None
+        self.right = None
+    # 우선순위 큐에서의 비교를 위해 __lt__ 정의
+    def __lt__(self, other):
+        return self.freq \lt other.freq
+
+def build_huffman_tree(frequencies):
+    heap = [Node(char, freq) for char, freq in frequencies.items()]
     heapq.heapify(heap)
     
     while len(heap) \gt 1:
-        lo = heapq.heappop(heap)
-        hi = heapq.heappop(heap)
-        # 왼쪽 가지는 '0', 오른쪽 가지는 '1' 추가
-        for pair in lo[1:]: pair[1] = '0' + pair[1]
-        for pair in hi[1:]: pair[1] = '1' + pair[1]
-        heapq.heappush(heap, [lo[0] + hi[0]] + lo[1:] + hi[1:])
+        left = heapq.heappop(heap)
+        right = heapq.heappop(heap)
         
-    return sorted(heapq.heappop(heap)[1:], key=lambda p: (len(p[-1]), p))
+        # 두 노드를 합쳐 새 부모 노드 생성 (그리디 선택)
+        merged = Node(None, left.freq + right.freq)
+        merged.left = left
+        merged.right = right
+        heapq.heappush(heap, merged)
+        
+    return heapq.heappop(heap)
+
+def generate_codes(node, current_code, codes):
+    if node is None: return
+    if node.char is not None:
+        codes[node.char] = current_code
+    generate_codes(node.left, current_code + "0", codes)
+    generate_codes(node.right, current_code + "1", codes)
 ```
