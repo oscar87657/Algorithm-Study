@@ -57,6 +57,7 @@
 - [x] Week 01 ~ 05 기본 구조 생성 및 알고리즘 구현 파일(py, c, java) 생성 완료
 - [x] Week 01 ~ 05 요약 파일 (`Summary_03.md`, `Summary_04.md`, `Summary_05.md` 상세 보강 완료)
 - [x] Week 06 기본 구조 생성 및 요약 파일 초기화 완료
+- [x] 중간고사 대비 요약본 (`Midterm_Summary.md`) 1~6주차 세부 목차 및 틀 생성 완료
 - [x] Git 업데이트 및 원격 저장소 푸시 (최종 완료)
 - [ ] Week 01: 알고리즘 구현 시작 (Binary Search 등)
 
