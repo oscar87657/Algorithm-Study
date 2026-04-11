@@ -21,6 +21,9 @@
     - [3.2. 기초 정렬 알고리즘 (Basic Sorting Algorithms)](#sorting_2)
     - [3.3. 정렬 알고리즘의 심화 개념](#sorting_3)
 - [4. 분할 정복 알고리즘](#divide_and_conquer)
+    - [4.1. 분할 정복의 설계 전략 (3단계)](#divide_and_conquer_1)
+    - [4.2. 주요 분할 정복 정렬 알고리즘](#divide_and_conquer_2)
+    - [4.3. 재귀식과 알고리즘 분석 도구](#divide_and_conquer_3)
 - [5. 탐욕 알고리즘](#greedy)
 - [6. 동적 계획법 (DP)](#dynamic_programming)
 
@@ -152,10 +155,36 @@
 <a id="divide_and_conquer"></a>
 ## 4. 분할 정복 알고리즘 (Divide and Conquer)
 
-- **설계 패러다임**: 분할 (Divide) $\rightarrow$ 정복 (Conquer) $\rightarrow$ 결합 (Combine).
-- **합병 정렬 (Merge Sort)**: $O(n \log\_{2}{n})$ 의 안정적인 정렬 알고리즘.
-- **퀵 정렬 (Quick Sort)**: 피벗 (Pivot)을 이용한 분할.
-- **재귀와 점화식**: 마스터 정리 (Master Theorem)를 이용한 시간 복잡도 계산.
+<a id="divide_and_conquer_1"></a>
+### 4.1. 분할 정복의 설계 전략 (3단계)
+
+문제를 더 작은 사례로 나누어 해결하는 하향식 (Top-down) 접근 방식입니다.
+
+1.  **Divide (분할)**: 주어진 원래 문제를 원래 문제와 동일한 유형의 더 작은 하위 문제들로 나눔.
+2.  **Conquer (정복)**: 하위 문제들을 재귀적으로 해결. 만약 하위 문제의 크기가 충분히 작다면 직접 해결 (Base case).
+3.  **Combine (결합)**: 하위 문제들의 해를 합쳐 원래 문제의 해를 구함.
+
+<a id="divide_and_conquer_2"></a>
+### 4.2. 주요 분할 정복 정렬 알고리즘
+
+- **합병 정렬 (Merge Sort)**:
+    - **원리**: 배열을 반으로 나누고 (Divide), 각각 정렬한 뒤 (Conquer), `Merge` 함수를 통해 합침 (Combine).
+    - **복잡도**: 분할 깊이 $\log\_{2}{n}$ 과 병합 비용 $n$ 의 곱으로, 모든 경우에 $O(n \log\_{2}{n})$ 보장.
+    - **특징**: 안정 정렬 (Stable Sort) 이지만, 병합 과정에서 임시 배열이 필요하므로 추가 공간 복잡도 $O(n)$ 이 발생.
+- **퀵 정렬 (Quick Sort)**:
+    - **원리**: 피벗 (Pivot) 을 선택하여 기준보다 작은 요소는 왼쪽, 큰 요소는 오른쪽으로 분할 (Partition).
+    - **복잡도**: 평균적으로 $O(n \log\_{2}{n})$ 으로 매우 빠르지만, 이미 정렬된 배열에서 최악의 피벗을 고를 경우 $O(n^{2})$ 로 저하.
+    - **특징**: 제자리 정렬 (In-place Sort). 피벗을 무작위로 선택하는 Randomized Quick Sort 기법으로 최악의 경우를 방지.
+
+<a id="divide_and_conquer_3"></a>
+### 4.3. 재귀식과 알고리즘 분석 도구
+
+- **마스터 정리 (Master Theorem)**:
+    - $T(n) = aT(n/b) + f(n)$ 형태의 점화식에서 수행 시간을 즉각적으로 도출하는 강력한 도구.
+    - $n^{\log\_{b}{a}}$ 와 $f(n)$ 의 다항식적 크기를 비교하여 세 가지 Case 로 나눔.
+- **이진 탐색 (Binary Search)**:
+    - 정렬된 배열에서 중간값을 확인하여 탐색 범위를 반으로 줄여나가는 알고리즘.
+    - 점화식 $T(n) = T(n/2) + O(1)$ 에 의해 시간 복잡도는 $O(\log\_{2}{n})$.
 
 <a id="greedy"></a>
 ## 5. 탐욕 알고리즘 (Greedy Algorithms)
