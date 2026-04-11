@@ -17,6 +17,9 @@
     - [2.3. 효율성 분석 기법 (루프 및 재귀)](#complexity_3)
     - [2.4. 최선, 평균, 최악의 경우 분석](#complexity_4)
 - [3. 기본 자료구조 및 정렬 알고리즘](#sorting)
+    - [3.1. 선형 자료구조 (Linear Data Structures)](#sorting_1)
+    - [3.2. 기초 정렬 알고리즘 (Basic Sorting Algorithms)](#sorting_2)
+    - [3.3. 정렬 알고리즘의 심화 개념](#sorting_3)
 - [4. 분할 정복 알고리즘](#divide_and_conquer)
 - [5. 탐욕 알고리즘](#greedy)
 - [6. 동적 계획법 (DP)](#dynamic_programming)
@@ -109,12 +112,42 @@
 <a id="sorting"></a>
 ## 3. 기본 자료구조 및 정렬 알고리즘
 
-- **선형 자료구조**: 배열 (Array), 스택 (Stack), 큐 (Queue).
-- **기초 정렬 알고리즘**:
-    - **버블 정렬 (Bubble Sort)**: 인접한 원소 비교 및 교환.
-    - **선택 정렬 (Selection Sort)**: 최솟값을 찾아 맨 앞으로 이동.
-    - **삽입 정렬 (Insertion Sort)**: 정렬된 부분에 적절한 위치 삽입.
-- **복잡도 비교**: 각 정렬 알고리즘의 최악/평균 시간 복잡도 분석.
+<a id="sorting_1"></a>
+### 3.1. 선형 자료구조 (Linear Data Structures)
+
+- **배열 (Arrays)**:
+    - 정적 배열 vs 동적 배열. 메모리 연속 할당으로 인해 인덱스를 통한 임의 접근 (Random Access) 이 $O(1)$ 로 매우 빠름.
+    - 단, 중간에 데이터를 삽입하거나 삭제할 경우 원소들의 이동이 필요하여 $O(n)$ 의 시간이 소요됨.
+- **스택 (Stacks)**:
+    - **LIFO (Last-In-First-Out)** 원리로 동작. 나중에 들어온 데이터가 먼저 나감.
+    - 주요 연산: `push` (삽입), `pop` (삭제), `peek` (최상단 확인).
+    - 활용: 함수 호출 스택, 수식 괄호 검사, 실행 취소 (Undo) 기능 등.
+- **큐 (Queues)**:
+    - **FIFO (First-In-First-Out)** 원리로 동작. 먼저 들어온 데이터가 먼저 나감.
+    - 주요 연산: `enqueue` (삽입), `dequeue` (삭제), `front`, `rear`.
+    - 활용: 프로세스 스케줄링, 너비 우선 탐색 (BFS) 등. 원형 큐 (Circular Queue) 와 우선순위 큐 (Priority Queue) 등의 변형이 존재함.
+
+<a id="sorting_2"></a>
+### 3.2. 기초 정렬 알고리즘 (Basic Sorting Algorithms)
+
+- **선택 정렬 (Selection Sort)**:
+    - 배열에서 최솟값을 찾아 맨 앞의 원소와 교환하는 방식.
+    - 시간 복잡도: 데이터의 초기 상태와 무관하게 항상 $O(n^{2})$ 소요.
+- **삽입 정렬 (Insertion Sort)**:
+    - 현재 원소를 정렬된 부분과 비교하여 적절한 위치에 삽입하는 방식.
+    - 시간 복잡도: 최악의 경우 $O(n^{2})$ 이지만, 데이터가 거의 정렬된 최선의 경우 $O(n)$ 으로 매우 효율적임.
+- **버블 정렬 (Bubble Sort)**:
+    - 인접한 두 원소를 비교하며, 큰 값을 뒤로 계속 밀어내는 (Bubble-up) 방식.
+    - 시간 복잡도: 평균 및 최악의 경우 $O(n^{2})$.
+
+<a id="sorting_3"></a>
+### 3.3. 정렬 알고리즘의 심화 개념
+
+- **안정성 (Stability)**:
+    - **안정 정렬 (Stable Sort)**: 동일한 키 값을 가진 원소들의 초기 상대적 순서가 정렬 후에도 유지됨 (예: 삽입 정렬, 버블 정렬).
+    - **불안정 정렬 (Unstable Sort)**: 동일한 키 값의 순서가 바뀔 수 있음 (예: 선택 정렬).
+- **제자리 정렬 (In-place Sort)**:
+    - 정렬을 수행하는 데 추가적인 메모리 공간이 거의 필요하지 않은 알고리즘 ($O(1)$ 공간 복잡도). 위 세 가지 기초 정렬은 모두 제자리 정렬에 해당함.
 
 <a id="divide_and_conquer"></a>
 ## 4. 분할 정복 알고리즘 (Divide and Conquer)
