@@ -17,7 +17,7 @@
 ---
 
 <a id="intro"></a>
-## 1. 동적 계획법(Dynamic Programming) 개요 (#intro)
+## 1. 동적 계획법(Dynamic Programming) 개요
 
 **동적 계획법 (Dynamic Programming, DP)** 은 복잡한 문제를 더 작은 하위 문제로 나누고, 그 하위 문제의 해를 저장하여 다시 계산하는 낭비를 방지함으로써 효율적으로 최적해를 찾는 알고리즘 설계 패러다임입니다.
 
@@ -58,7 +58,7 @@ DP를 적용하기 위해서는 문제의 구조가 다음 두 가지 성질을 
 ```python
 # 1. Top-Down (Memoization)
 def fib_top_down(n, memo):
-    if n \le 2: return 1
+    if n <= 2: return 1
     if memo[n] != 0: return memo[n]
     memo[n] = fib_top_down(n-1, memo) + fib_top_down(n-2, memo)
     return memo[n]
@@ -75,7 +75,7 @@ def fib_bottom_up(n):
 ---
 
 <a id="basic"></a>
-## 2. 기초 DP 사례 (#basic)
+## 2. 기초 DP 사례
 
 가장 직관적인 예시를 통해 동적 계획법이 어떻게 지수 시간의 문제를 선형 시간으로 단축시키는지 살펴봅니다.
 
@@ -118,7 +118,7 @@ def matrix_path(m, n):
 ---
 
 <a id="lcs"></a>
-## 3. 최장 공통 부분 수열 (LCS) (#lcs)
+## 3. 최장 공통 부분 수열 (LCS)
 
 **LCS (Longest Common Subsequence)** 는 두 문자열을 비교할 때, 공통으로 포함된 부분 수열 중 가장 긴 것을 찾는 알고리즘입니다. 여기서 **부분 수열**이란, 문자들 사이의 순서는 유지하되 반드시 연속할 필요는 없는 수열을 말합니다.
 
@@ -166,11 +166,11 @@ def matrix_path(m, n):
 def get_lcs_string(x, y, c):
     result = []
     i, j = len(x), len(y)
-    while i \gt 0 and j \gt 0:
+    while i > 0 and j > 0:
         if x[i-1] == y[j-1]: # Case 1: ↖ (Match)
             result.append(x[i-1])
             i -= 1; j -= 1
-        elif c[i-1][j] \ge c[i][j-1]: # Case 2: ↑ (From Top)
+        elif c[i-1][j] >= c[i][j-1]: # Case 2: ↑ (From Top)
             i -= 1
         else: # Case 3: ← (From Left)
             j -= 1
@@ -180,7 +180,7 @@ def get_lcs_string(x, y, c):
 ---
 
 <a id="knapsack"></a>
-## 4. 0-1 배낭 문제 (0-1 Knapsack) (#knapsack)
+## 4. 0-1 배낭 문제 (0-1 Knapsack)
 
 **0-1 배낭 문제**는 무게 제한이 있는 배낭에 여러 물건을 넣을 때, 가치의 합이 최대가 되도록 물건을 고르는 문제입니다. 5주차의 '분할 가능 배낭 문제'와 달리 물건을 쪼갤 수 없으며, **넣거나(1) 빼거나(0)** 의 선택만 가능합니다.
 
@@ -217,7 +217,7 @@ def knapsack_01(weights, values, capacity):
     
     for i in range(1, n + 1):
         for w in range(1, capacity + 1):
-            if weights[i-1] \le w:
+            if weights[i-1] <= w:
                 k[i][w] = max(k[i-1][w], k[i-1][w - weights[i-1]] + values[i-1])
             else:
                 k[i][w] = k[i-1][w]
@@ -227,7 +227,7 @@ def knapsack_01(weights, values, capacity):
 ---
 
 <a id="coin"></a>
-## 5. 동전 거스름돈 (Coin Change - DP) (#coin)
+## 5. 동전 거스름돈 (Coin Change - DP)
 
 주어진 동전 권종들로 특정 금액  $n$  을 만들 때, **사용되는 동전의 최소 개수**를 구하는 문제입니다. 5주차의 그리디 방식은 특정 조건에서만 성립하지만, DP는 모든 경우에 대해 최적해를 보장합니다.
 
@@ -266,7 +266,7 @@ def coin_change_dp(coins, amount):
     
     for j in range(1, amount + 1):
         for coin in coins:
-            if coin \le j:
+            if coin <= j:
                 c[j] = min(c[j], c[j - coin] + 1)
                 
     return c[amount]
@@ -275,7 +275,7 @@ def coin_change_dp(coins, amount):
 ---
 
 <a id="floyd"></a>
-## 6. 모든 쌍 최단 경로 (Floyd-Warshall) (#floyd)
+## 6. 모든 쌍 최단 경로 (Floyd-Warshall)
 
 **플로이드-워셜 (Floyd-Warshall)** 알고리즘은 그래프 내의 **모든 정점 쌍** 사이의 최단 경로를 구하는 알고리즘입니다. 음수 가중치가 있어도 작동하지만, 음수 사이클이 없어야 합니다.
 
@@ -315,7 +315,7 @@ def floyd_warshall(graph, v):
     for k in range(v): # 1. 중간 정점
         for i in range(v): # 2. 출발 정점
             for j in range(v): # 3. 도착 정점
-                if dist[i][j] \gt dist[i][k] + dist[k][j]:
+                if dist[i][j] > dist[i][k] + dist[k][j]:
                     dist[i][j] = dist[i][k] + dist[k][j]
                     
     return dist
@@ -324,7 +324,7 @@ def floyd_warshall(graph, v):
 ---
 
 <a id="edit"></a>
-## 7. 편집 거리 (Edit Distance) (#edit)
+## 7. 편집 거리 (Edit Distance)
 
 **편집 거리 (Levenshtein Distance)** 는 한 문자열을 다른 문자열로 변환하는 데 필요한 최소 연산 횟수를 구하는 알고리즘입니다.
 
@@ -384,7 +384,7 @@ def edit_distance(x, y):
 ---
 
 <a id="comparison"></a>
-## 8. 성능 요약 및 알고리즘 비교 (#comparison)
+## 8. 성능 요약 및 알고리즘 비교
 
 6주차에서 다룬 주요 동적 계획법 알고리즘들의 핵심 점화식과 시간 복잡도를 정리합니다.
 

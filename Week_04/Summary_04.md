@@ -14,7 +14,7 @@
 ---
 
 <a id="intro"></a>
-## 1. 분할 정복(Divide and Conquer) 개요 (#intro)
+## 1. 분할 정복(Divide and Conquer) 개요
 
 **분할 정복 (Divide and Conquer)** 은 해결하기 어려운 큰 문제를 직접 해결하는 대신, 이를 작은 문제들로 나누어 각각 해결한 뒤 그 결과들을 합쳐서 원래 문제를 해결하는 알고리즘 설계 기법입니다.
 
@@ -67,7 +67,7 @@ $$
 ---
 
 <a id="analysis"></a>
-## 2. 재귀 관계식과 마스터 정리 (#analysis)
+## 2. 재귀 관계식과 마스터 정리
 
 분할 정복 알고리즘의 실행 시간은 재귀 함수로 표현되며, 이를 분석하기 위해 **재귀 관계식 (Recurrence Relation)** 을 사용합니다.
 
@@ -117,7 +117,7 @@ Leaves:     T(1) T(1) ... T(1) (a^h개)     -> n^{\log_{b}{a}} * T(1)
 ---
 
 <a id="algorithms"></a>
-## 3. 대표적인 분할 정복 알고리즘 (#algorithms)
+## 3. 대표적인 분할 정복 알고리즘
 
 분할 정복의 가장 전형적인 사례인 이진 탐색, 합병 정렬, 퀵 정렬의 작동 원리와 성능을 분석합니다.
 
@@ -140,11 +140,11 @@ Low: 0, High: 6, Mid: 3 (arr[3] = 7)
 
 ```python
 def binary_search(arr, low, high, target):
-    if low \gt high: return -1
+    if low > high: return -1
     mid = (low + high) // 2
     if arr[mid] == target:
         return mid
-    elif arr[mid] \gt target:
+    elif arr[mid] > target:
         return binary_search(arr, low, mid - 1, target)
     else:
         return binary_search(arr, mid + 1, high, target)
@@ -158,9 +158,9 @@ def binary_search(arr, low, high, target):
 [ 3 | 9 ]  [ 2 | 7 ]  (정렬된 두 부분 배열)
   ^          ^
  (i)        (j)
-1. 3 \gt 2 -> [ 2 ], j++
-2. 3 \lt 7 -> [ 2, 3 ], i++
-3. 9 \gt 7 -> [ 2, 3, 7 ], j++
+1. 3 > 2  -> [ 2 ], j++
+2. 3 < 7  -> [ 2, 3 ], i++
+3. 9 > 7  -> [ 2, 3, 7 ], j++
 4. i 포인터 남은 원소 추가 -> [ 2, 3, 7, 9 ]
 ```
 
@@ -172,7 +172,7 @@ def binary_search(arr, low, high, target):
 
 ```python
 def merge_sort(arr):
-    if len(arr) \le 1: return arr
+    if len(arr) <= 1: return arr
     mid = len(arr) // 2
     left = merge_sort(arr[:mid])
     right = merge_sort(arr[mid:])
@@ -180,8 +180,8 @@ def merge_sort(arr):
 
 def merge(left, right):
     result, i, j = [], 0, 0
-    while i \lt len(left) and j \lt len(right):
-        if left[i] \le right[j]:
+    while i < len(left) and j < len(right):
+        if left[i] <= right[j]:
             result.append(left[i]); i += 1
         else:
             result.append(right[j]); j += 1
@@ -213,7 +213,7 @@ Initial: [ 31, 8, 48, 73, 11, 3, 20, 15 ] (Pivot: 15)
 
 ```python
 def quick_sort(arr, low, high):
-    if low \lt high:
+    if low < high:
         p = partition(arr, low, high)
         quick_sort(arr, low, p - 1)
         quick_sort(arr, p + 1, high)
@@ -222,7 +222,7 @@ def partition(arr, low, high):
     pivot = arr[high]
     i = low - 1
     for j in range(low, high):
-        if arr[j] \le pivot:
+        if arr[j] <= pivot:
             i += 1
             arr[i], arr[j] = arr[j], arr[i]
     arr[i + 1], arr[high] = arr[high], arr[i + 1]
@@ -232,7 +232,7 @@ def partition(arr, low, high):
 ---
 
 <a id="advanced"></a>
-## 4. 고급 분할 정복 알고리즘 (#advanced)
+## 4. 고급 분할 정복 알고리즘
 
 기초적인 정렬과 탐색을 넘어, 분할 정복 기법을 응용하여 복잡한 문제를 효율적으로 해결하는 사례들을 살펴봅니다.
 
@@ -288,7 +288,7 @@ def partition(arr, low, high):
 ---
 
 <a id="limitations"></a>
-## 5. 분할 정복의 한계 (#limitations)
+## 5. 분할 정복의 한계
 
 분할 정복은 강력한 도구이지만, 모든 문제에 효율적인 것은 아닙니다. 특히 **중복되는 부분 문제 (Overlapping Subproblems)** 가 존재하는 경우 성능이 급격히 저하됩니다.
 
@@ -313,7 +313,7 @@ def partition(arr, low, high):
 ---
 
 <a id="comparison"></a>
-## 6. 분할 정복 알고리즘 성능 요약표 (#comparison)
+## 6. 분할 정복 알고리즘 성능 요약표
 
 4주차에서 다룬 주요 분할 정복 알고리즘들의 성능을 재귀 관계식과 함께 정리합니다.
 

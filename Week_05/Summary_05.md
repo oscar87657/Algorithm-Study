@@ -14,7 +14,7 @@
 ---
 
 <a id="intro"></a>
-## 1. 그리디 알고리즘(Greedy Algorithm) 개요 (#intro)
+## 1. 그리디 알고리즘(Greedy Algorithm) 개요
 
 **그리디 알고리즘 (Greedy Algorithm)** 은 해결해야 할 전체 문제를 한 번에 해결하는 대신, 지금 이 순간 가장 최선이라고 생각되는 선택(**Local Optimal**)을 반복하여 전체 문제의 최적해(**Global Optimal**)를 구하는 방식입니다.
 
@@ -62,7 +62,7 @@
 ---
 
 <a id="basic"></a>
-## 2. 기초 그리디 알고리즘 사례 (#basic)
+## 2. 기초 그리디 알고리즘 사례
 
 그리디 알고리즘이 실생활과 알고리즘 문제에서 어떻게 적용되는지 구체적인 사례를 통해 살펴봅니다.
 
@@ -114,7 +114,7 @@ def fractional_knapsack(items, capacity):
     
     total_value = 0
     for value, weight in items:
-        if capacity \ge weight:
+        if capacity >= weight:
             # 물건을 통째로 담을 수 있는 경우
             capacity -= weight
             total_value += value
@@ -142,7 +142,7 @@ def activity_selection(meetings):
     selected_meetings = []
     
     for start, finish in meetings:
-        if start \ge last_finish_time:
+        if start >= last_finish_time:
             selected_meetings.append((start, finish))
             last_finish_time = finish
             
@@ -182,7 +182,7 @@ def job_scheduling(jobs, t):
 ---
 
 <a id="huffman"></a>
-## 3. 데이터 압축과 허프만 코딩 (Huffman Coding) (#huffman)
+## 3. 데이터 압축과 허프만 코딩 (Huffman Coding)
 
 **허프만 코딩 (Huffman Coding)** 은 문자의 출현 빈도에 따라 각기 다른 길이의 부호를 부여하는 **가변 길이 부호화 (Variable-length Encoding)** 방식입니다.
 
@@ -228,13 +228,13 @@ class Node:
         self.right = None
     # 우선순위 큐에서의 비교를 위해 __lt__ 정의
     def __lt__(self, other):
-        return self.freq \lt other.freq
+        return self.freq < other.freq
 
 def build_huffman_tree(frequencies):
     heap = [Node(char, freq) for char, freq in frequencies.items()]
     heapq.heapify(heap)
     
-    while len(heap) \gt 1:
+    while len(heap) > 1:
         left = heapq.heappop(heap)
         right = heapq.heappop(heap)
         
@@ -257,7 +257,7 @@ def generate_codes(node, current_code, codes):
 ---
 
 <a id="graph"></a>
-## 4. 그래프 내의 그리디 알고리즘 (#graph)
+## 4. 그래프 내의 그리디 알고리즘
 
 그래프의 가중치 간선이나 최단 경로를 구하는 문제에서도 그리디 전략은 매우 효율적인 해법을 제공합니다.
 
@@ -307,14 +307,14 @@ def dijkstra(graph, start):
         current_distance, current_node = heapq.heappop(queue)
         
         # 이미 처리된 노드라면 스킵
-        if distances[current_node] \lt current_distance:
+        if distances[current_node] < current_distance:
             continue
             
         for neighbor, weight in graph[current_node].items():
             distance = current_distance + weight
             
             # 더 짧은 경로를 찾은 경우 (Relaxation)
-            if distance \lt distances[neighbor]:
+            if distance < distances[neighbor]:
                 distances[neighbor] = distance
                 heapq.heappush(queue, (distance, neighbor))
                 
@@ -324,7 +324,7 @@ def dijkstra(graph, start):
 ---
 
 <a id="comparison"></a>
-## 5. 그리디 vs 동적 계획법 (#comparison)
+## 5. 그리디 vs 동적 계획법
 
 그리디 알고리즘과 동적 계획법은 모두 최적 부분 구조를 가지는 문제를 해결하는 데 사용되지만, 접근 방식에서 뚜렷한 차이가 있습니다.
 

@@ -16,7 +16,7 @@
 ---
 
 <a id="fundamentals"></a>
-## 1. 알고리즘의 기초 및 특성 (#fundamentals)
+## 1. 알고리즘의 기초 및 특성
 
 알고리즘은 문제를 해결하기 위한 **유한한 단계** 의 절차입니다.
 
@@ -30,7 +30,7 @@
 ---
 
 <a id="representation"></a>
-## 2. 알고리즘의 표현과 재귀 (Recursion) (#representation)
+## 2. 알고리즘의 표현과 재귀 (Recursion)
 
 ### 2.1 재귀와 호출 스택 (Call Stack)
 재귀 함수는 자기 자신을 호출할 때마다 메모리의 **스택 (Stack)** 영역에 새로운 프레임을 쌓습니다.
@@ -47,7 +47,7 @@ gcd(24, 14)
 ---
 
 <a id="classification"></a>
-## 3. 알고리즘 설계 전략 분류 (#classification)
+## 3. 알고리즘 설계 전략 분류
 
 | 유형 | 핵심 아이디어 | 대표 사례 |
 | :--- | :--- | :--- |
@@ -59,7 +59,7 @@ gcd(24, 14)
 ---
 
 <a id="complexity"></a>
-## 4. 시간 복잡도와 성능 비교 (#complexity)
+## 4. 시간 복잡도와 성능 비교
 
 알고리즘의 성능은 입력 크기  $n$  이 커짐에 따라 연산 횟수가 어떻게 증가하는지로 결정됩니다.
 
@@ -89,7 +89,7 @@ gcd(24, 14)
 ---
 
 <a id="asymptotic"></a>
-## 5. 점근적 표기법 (Asymptotic Notation) (#asymptotic)
+## 5. 점근적 표기법 (Asymptotic Notation)
 
 데이터 크기가 무한히 커질 때 알고리즘의 대략적인 성능 추세를 나타냅니다.
 
@@ -112,7 +112,7 @@ gcd(24, 14)
 ---
 
 <a id="recurrence"></a>
-## 6. 재귀식 풀이법 (Recurrence Relations) (#recurrence)
+## 6. 재귀식 풀이법 (Recurrence Relations)
 
 ### 6.1 반복 대입법 (Repeated Substitution)
 - **예시**:  $T(n) = T(n-1) + n, T(1) = 1$  (1부터  $n$  까지의 합)
@@ -122,7 +122,7 @@ gcd(24, 14)
 ---
 
 <a id="master"></a>
-## 7. 마스터 정리 (Master Theorem) (#master)
+## 7. 마스터 정리 (Master Theorem)
 
 재귀 관계식  $T(n) = aT(n/b) + f(n)$  을 해결하는 가장 빠른 도구입니다.
 
