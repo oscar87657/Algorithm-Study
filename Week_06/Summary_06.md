@@ -55,6 +55,25 @@ DP를 적용하기 위해서는 문제의 구조가 다음 두 가지 성질을 
 가장 작은 부분 문제부터 순서대로 테이블을 채워나가는 반복문 기반의 방식입니다. 시스템 스택 오버헤드가 없으며 모든 부분 문제를 체계적으로 해결합니다.
 
 **[구현 방식 비교]**
+```
+// Top-Down (Memoization)
+ALGORITHM FIB_TD(n, memo)
+    IF n ≤ 2: RETURN 1
+    IF memo[n] ≠ 0: RETURN memo[n]
+    memo[n] ← FIB_TD(n-1, memo) + FIB_TD(n-2, memo)
+    RETURN memo[n]
+
+// Bottom-Up (Tabulation)
+ALGORITHM FIB_BU(n)
+    table[1] ← table[2] ← 1
+    FOR i ← 3 TO n:
+        table[i] ← table[i-1] + table[i-2]
+    RETURN table[n]
+```
+
+<details>
+<summary>Python 구현</summary>
+
 ```python
 # 1. Top-Down (Memoization)
 def fib_top_down(n, memo):
@@ -71,6 +90,8 @@ def fib_bottom_up(n):
         table[i] = table[i-1] + table[i-2]
     return table[n]
 ```
+
+</details>
 
 ---
 
@@ -105,7 +126,19 @@ $$
 - **경계 조건**:  $c[i, 0] = c[0, j] = 0$  (계산을 위해 가상의 0번째 행/열을 둡니다.)
 - **시간 복잡도**: 전체 칸의 개수인  $O(n^{2})$  에 비례합니다.
 
-**[작동 로직 (Python)]**
+**[의사코드]**
+```
+ALGORITHM MATRIX_PATH(m, n)
+    c[i][0] ← 0,  c[0][j] ← 0   // 경계 초기화
+    FOR i ← 1 TO n:
+        FOR j ← 1 TO n:
+            c[i][j] ← m[i][j] + max(c[i-1][j], c[i][j-1])
+    RETURN c[n][n]
+```
+
+<details>
+<summary>Python 구현</summary>
+
 ```python
 def matrix_path(m, n):
     c = [[0] * (n + 1) for _ in range(n + 1)]
@@ -114,6 +147,8 @@ def matrix_path(m, n):
             c[i][j] = m[i-1][j-1] + max(c[i-1][j], c[i][j-1])
     return c[n][n]
 ```
+
+</details>
 
 ---
 
@@ -161,21 +196,40 @@ def matrix_path(m, n):
 ### 3.4 역추적: 실제 문자열 찾기
 결과값  **4**  에서 시작하여 화살표를 거꾸로 따라갑니다. **↖** 를 만날 때마다 해당 문자를 기록하면 실제 LCS인 `BCBA`를 얻을 수 있습니다.
 
-**[추출 로직 (Python)]**
+**[역추적 의사코드]**
+```
+ALGORITHM GET_LCS(x, y, c)
+    result ← [],  i ← |x|,  j ← |y|
+    WHILE i > 0 AND j > 0:
+        IF x[i] = y[j]:           // ↖ Match
+            PREPEND x[i] to result
+            i--;  j--
+        ELSE IF c[i-1][j] ≥ c[i][j-1]:  // ↑
+            i--
+        ELSE:                     // ←
+            j--
+    RETURN result
+```
+
+<details>
+<summary>Python 구현</summary>
+
 ```python
 def get_lcs_string(x, y, c):
     result = []
     i, j = len(x), len(y)
     while i > 0 and j > 0:
-        if x[i-1] == y[j-1]: # Case 1: ↖ (Match)
+        if x[i-1] == y[j-1]:
             result.append(x[i-1])
             i -= 1; j -= 1
-        elif c[i-1][j] >= c[i][j-1]: # Case 2: ↑ (From Top)
+        elif c[i-1][j] >= c[i][j-1]:
             i -= 1
-        else: # Case 3: ← (From Left)
+        else:
             j -= 1
     return "".join(reversed(result))
 ```
+
+</details>
 
 ---
 
@@ -209,12 +263,27 @@ def get_lcs_string(x, y, c):
 - **최종 결과**:  $K[4, 10] = 90$  (2번과 4번 물건을 선택했을 때 최적)
 - **시간 복잡도**: 물건의 개수  $n$  과 배낭 용량  $C$  에 비례하는  $O(nC)$  입니다.
 
-**[작동 로직 (Python)]**
+**[의사코드]**
+```
+ALGORITHM KNAPSACK_01(weights, values, C)
+    k[0][w] ← 0  for all w   // 초기화
+    FOR i ← 1 TO n:
+        FOR w ← 1 TO C:
+            IF weights[i] ≤ w:
+                k[i][w] ← max(k[i-1][w],
+                               k[i-1][w - weights[i]] + values[i])
+            ELSE:
+                k[i][w] ← k[i-1][w]   // 못 넣음 → 이전 그대로
+    RETURN k[n][C]
+```
+
+<details>
+<summary>Python 구현</summary>
+
 ```python
 def knapsack_01(weights, values, capacity):
     n = len(weights)
     k = [[0] * (capacity + 1) for _ in range(n + 1)]
-    
     for i in range(1, n + 1):
         for w in range(1, capacity + 1):
             if weights[i-1] <= w:
@@ -223,6 +292,8 @@ def knapsack_01(weights, values, capacity):
                 k[i][w] = k[i-1][w]
     return k[n][capacity]
 ```
+
+</details>
 
 ---
 
@@ -257,20 +328,32 @@ $$
     - 금액 10은 동전 '10' 하나로 가능하므로  $C[10] = 1$ .
     - 금액 20은  $C[20-10] + 1 = 2$  와  $C[20-16] + 1 = 5$  중 작은 값인 **2**를 선택.
 
-**[작동 로직 (Python)]**
+**[의사코드]**
+```
+ALGORITHM COIN_CHANGE_DP(coins, amount)
+    C[0] ← 0;  C[j] ← ∞  for j ≥ 1
+    FOR j ← 1 TO amount:
+        FOR each coin d in coins:
+            IF d ≤ j:
+                C[j] ← min(C[j], C[j - d] + 1)
+    RETURN C[amount]
+```
+
+<details>
+<summary>Python 구현</summary>
+
 ```python
 def coin_change_dp(coins, amount):
-    # 최댓값(무한대)으로 초기화
     c = [float('inf')] * (amount + 1)
     c[0] = 0
-    
     for j in range(1, amount + 1):
         for coin in coins:
             if coin <= j:
                 c[j] = min(c[j], c[j - coin] + 1)
-                
     return c[amount]
 ```
+
+</details>
 
 ---
 
@@ -298,28 +381,37 @@ $$
 - **시간 복잡도**: 정점의 개수가  $V$  일 때, 3중 반복문을 사용하므로 항상  $\Theta(V^{3})$  입니다.
 - **장점**: 구현이 매우 간결하며, 모든 쌍의 거리를 한 번에 구할 수 있습니다.
 
-**[작동 로직 (Python)]**
+**[의사코드]**
+```
+ALGORITHM FLOYD_WARSHALL(graph, V)
+    d[i][i] ← 0;  d[i][j] ← ∞  (i ≠ j)
+    FOR each edge (u, v, w): d[u][v] ← w
+    FOR k ← 0 TO V-1:           // 중간 정점 후보
+        FOR i ← 0 TO V-1:       // 출발
+            FOR j ← 0 TO V-1:   // 도착
+                IF d[i][k] + d[k][j] < d[i][j]:
+                    d[i][j] ← d[i][k] + d[k][j]
+    RETURN d
+```
+
+<details>
+<summary>Python 구현</summary>
+
 ```python
 def floyd_warshall(graph, v):
-    # 거리를 저장할 2차원 리스트 (무한대로 초기화)
     dist = [[float('inf')] * v for _ in range(v)]
-    
-    # 자기 자신으로의 거리는 0
     for i in range(v): dist[i][i] = 0
-    
-    # 간선 정보 초기화 (직접 연결된 경로)
     for u, v_target, w in graph:
         dist[u][v_target] = w
-        
-    # 플로이드-워셜 핵심 3중 반복문
-    for k in range(v): # 1. 중간 정점
-        for i in range(v): # 2. 출발 정점
-            for j in range(v): # 3. 도착 정점
+    for k in range(v):
+        for i in range(v):
+            for j in range(v):
                 if dist[i][j] > dist[i][k] + dist[k][j]:
                     dist[i][j] = dist[i][k] + dist[k][j]
-                    
     return dist
 ```
+
+</details>
 
 ---
 
@@ -363,15 +455,30 @@ $$
 - **최종 결과**: 3 (k→s 교체, e→i 교체, g 삽입)
 - **시간 복잡도**: 두 문자열의 길이를  $m, n$  이라 할 때  $O(mn)$  입니다.
 
-**[작동 로직 (Python)]**
+**[의사코드]**
+```
+ALGORITHM EDIT_DISTANCE(x, y)
+    e[i][0] ← i;  e[0][j] ← j   // 경계 초기화
+    FOR i ← 1 TO |x|:
+        FOR j ← 1 TO |y|:
+            IF x[i] = y[j]:
+                e[i][j] ← e[i-1][j-1]          // 연산 불필요
+            ELSE:
+                e[i][j] ← 1 + min(e[i-1][j],   // 삭제
+                                   e[i][j-1],   // 삽입
+                                   e[i-1][j-1]) // 대체
+    RETURN e[|x|][|y|]
+```
+
+<details>
+<summary>Python 구현</summary>
+
 ```python
 def edit_distance(x, y):
     m, n = len(x), len(y)
     e = [[0] * (n + 1) for _ in range(m + 1)]
-    
     for i in range(m + 1): e[i][0] = i
     for j in range(n + 1): e[0][j] = j
-    
     for i in range(1, m + 1):
         for j in range(1, n + 1):
             if x[i-1] == y[j-1]:
@@ -380,6 +487,8 @@ def edit_distance(x, y):
                 e[i][j] = 1 + min(e[i-1][j], e[i][j-1], e[i-1][j-1])
     return e[m][n]
 ```
+
+</details>
 
 ---
 

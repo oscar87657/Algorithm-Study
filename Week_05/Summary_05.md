@@ -75,16 +75,31 @@
     - **그리디 결과**: 500원 + 100원 + 100원 + 100원 (총 4개)
     - **최적해 (Optimal)**: 400원 + 400원 (총 2개)
 
-**[작동 로직 (Python)]**
+**[의사코드]**
+```
+ALGORITHM COIN_CHANGE_GREEDY(amount, coins)
+    SORT coins 내림차순
+    count ← 0
+    FOR each coin in coins:
+        count  ← count + amount // coin
+        amount ← amount mod coin
+    RETURN count
+```
+
+<details>
+<summary>Python 구현</summary>
+
 ```python
 def coin_change_greedy(amount, coins):
-    coins.sort(reverse=True) # 큰 동전부터 정렬
+    coins.sort(reverse=True)
     count = 0
     for coin in coins:
         count += amount // coin
         amount %= coin
     return count
 ```
+
+</details>
 
 ### 2.2 분할 가능 배낭 문제 (Fractional Knapsack)
 물건을 쪼개서 넣을 수 있는 배낭 문제로, 그리디 알고리즘으로 최적해를 구할 수 있습니다.
@@ -106,25 +121,39 @@ Item 3: 120$ / 30kg ($4/kg)
 
 - **복잡도 분석**: 물건을 가치 비율 순으로 정렬하는 데  $O(n \log\_{2}{n})$  의 시간이 소요됩니다.
 
-**[작동 로직 (Python)]**
+**[의사코드]**
+```
+ALGORITHM FRACTIONAL_KNAPSACK(items, capacity)
+    SORT items by (value/weight) 내림차순
+    total ← 0
+    FOR each (value, weight) in items:
+        IF capacity ≥ weight:
+            capacity -= weight
+            total    += value
+        ELSE:
+            total += value × (capacity / weight)  // 잘라서 넣기
+            BREAK
+    RETURN total
+```
+
+<details>
+<summary>Python 구현</summary>
+
 ```python
 def fractional_knapsack(items, capacity):
-    # 단위 무게당 가치(v/w) 기준으로 내림차순 정렬
     items.sort(key=lambda x: x[0]/x[1], reverse=True)
-    
     total_value = 0
     for value, weight in items:
         if capacity >= weight:
-            # 물건을 통째로 담을 수 있는 경우
             capacity -= weight
             total_value += value
         else:
-            # 물건의 일부만 담는 경우 (Fractional)
             total_value += value * (capacity / weight)
             break
-            
     return total_value
 ```
+
+</details>
 
 ### 2.3 회의실 배정 (Activity Selection)
 한 개의 회의실에서 가장 많은 회의를 열 수 있도록 스케줄을 짜는 문제입니다.
@@ -132,22 +161,34 @@ def fractional_knapsack(items, capacity):
 - **그리디 전략**: **종료 시간 (Finish Time)** 이 가장 빠른 회의부터 순서대로 선택합니다.
 - **선택 기준의 정당성**: 회의가 빨리 끝날수록 다음 회의를 시작할 수 있는 여유 시간이 더 많이 확보되기 때문에 가장 많은 회의를 선택할 수 있게 됩니다. (시작 시간이나 짧은 시간 기준은 최적해를 보장하지 않음)
 
-**[작동 로직 (Python)]**
+**[의사코드]**
+```
+ALGORITHM ACTIVITY_SELECTION(meetings)
+    SORT meetings by finish time 오름차순
+    last_finish ← 0;  selected ← []
+    FOR each (start, finish) in meetings:
+        IF start ≥ last_finish:
+            APPEND (start, finish) to selected
+            last_finish ← finish
+    RETURN selected
+```
+
+<details>
+<summary>Python 구현</summary>
+
 ```python
 def activity_selection(meetings):
-    # 종료 시간 기준으로 정렬
     meetings.sort(key=lambda x: x[1])
-    
     last_finish_time = 0
     selected_meetings = []
-    
     for start, finish in meetings:
         if start >= last_finish_time:
             selected_meetings.append((start, finish))
             last_finish_time = finish
-            
     return selected_meetings
 ```
+
+</details>
 
 - **복잡도 분석**: 종료 시간 기준 정렬에  $O(n \log\_{2}{n})$ , 순차 선택에  $O(n)$  이 소요되어 총  $O(n \log\_{2}{n})$  입니다.
 
@@ -157,25 +198,38 @@ def activity_selection(meetings):
 - **그리디 전략**: **이익 (Profit)** 이 가장 높은 작업부터 선택하여, 해당 작업의 **마감 시간에 가장 가까운 빈 시간대**에 배치합니다.
 - **회의실 배정과의 차이**: 회의실 배정은 '개수'를 최대화하지만, 작업 스케줄링은 각 작업의 '가치(이익)'를 고려하여 총합을 최대화합니다.
 
-**[작동 로직 (Python)]**
+**[의사코드]**
+```
+ALGORITHM JOB_SCHEDULING(jobs, t)
+    SORT jobs by profit 내림차순
+    result[0..t-1] ← None;  total ← 0
+    FOR each (id, deadline, profit) in jobs:
+        FOR j ← min(t, deadline)-1 DOWNTO 0:
+            IF result[j] = None:
+                result[j] ← id
+                total     += profit
+                BREAK
+    RETURN result, total
+```
+
+<details>
+<summary>Python 구현</summary>
+
 ```python
 def job_scheduling(jobs, t):
-    # 이익 기준 내림차순 정렬
     jobs.sort(key=lambda x: x[2], reverse=True)
-    
-    result = [None] * t # 시간대별 할당 결과
+    result = [None] * t
     total_profit = 0
-    
     for job_id, deadline, profit in jobs:
-        # 마감 시간부터 역순으로 빈 자리가 있는지 확인
         for j in range(min(t, deadline) - 1, -1, -1):
             if result[j] is None:
                 result[j] = job_id
                 total_profit += profit
                 break
-                
     return result, total_profit
 ```
+
+</details>
 
 - **핵심 포인트**: 이익이 큰 작업을 먼저 처리하되, 가능한 한 마감 직전에 배치하여 앞쪽 시간대를 다른 작업을 위해 남겨두는 탐욕적 선택을 합니다.
 
@@ -216,7 +270,28 @@ Frequencies: {A: 45, B: 13, C: 12, D: 16, E: 9, F: 5}
 - **시간 복잡도**: 우선순위 큐(Min-Heap)를 사용하여 빈도수가 낮은 노드를 추출하므로  $O(n \log\_{2}{n})$  이 소요됩니다.
 - **공간 효율성**: 자주 나타나는 문자는 짧은 코드를, 드물게 나타나는 문자는 긴 코드를 할당받아 전체 파일 크기를 최소화합니다.
 
-**[작동 로직 (Python)]**
+**[의사코드]**
+```
+ALGORITHM BUILD_HUFFMAN(frequencies)
+    heap ← MIN_HEAP({ Node(char, freq) for each char })
+    WHILE |heap| > 1:
+        left   ← EXTRACT_MIN(heap)
+        right  ← EXTRACT_MIN(heap)
+        parent ← Node(None, left.freq + right.freq)
+        parent.left ← left;  parent.right ← right
+        INSERT(heap, parent)
+    RETURN EXTRACT_MIN(heap)     // 루트 반환
+
+ALGORITHM GENERATE_CODES(node, code, codes)
+    IF node = None: RETURN
+    IF node.char ≠ None: codes[node.char] ← code
+    GENERATE_CODES(node.left,  code + "0", codes)
+    GENERATE_CODES(node.right, code + "1", codes)
+```
+
+<details>
+<summary>Python 구현</summary>
+
 ```python
 import heapq
 
@@ -226,24 +301,19 @@ class Node:
         self.freq = freq
         self.left = None
         self.right = None
-    # 우선순위 큐에서의 비교를 위해 __lt__ 정의
     def __lt__(self, other):
         return self.freq < other.freq
 
 def build_huffman_tree(frequencies):
     heap = [Node(char, freq) for char, freq in frequencies.items()]
     heapq.heapify(heap)
-    
     while len(heap) > 1:
         left = heapq.heappop(heap)
         right = heapq.heappop(heap)
-        
-        # 두 노드를 합쳐 새 부모 노드 생성 (그리디 선택)
         merged = Node(None, left.freq + right.freq)
         merged.left = left
         merged.right = right
         heapq.heappush(heap, merged)
-        
     return heapq.heappop(heap)
 
 def generate_codes(node, current_code, codes):
@@ -253,6 +323,8 @@ def generate_codes(node, current_code, codes):
     generate_codes(node.left, current_code + "0", codes)
     generate_codes(node.right, current_code + "1", codes)
 ```
+
+</details>
 
 ---
 
@@ -294,7 +366,24 @@ def generate_codes(node, current_code, codes):
 - **제약 사항**: 모든 간선의 가중치가 **0 이상**이어야 합니다. (음수 가중치가 있을 경우 벨만-포드 알고리즘 필요)
 - **복잡도**: 우선순위 큐(Min-Heap)를 사용할 경우  $O(E \log\_{2}{V})$  가 소요됩니다.
 
-**[작동 로직 (Python)]**
+**[의사코드]**
+```
+ALGORITHM DIJKSTRA(graph, start)
+    d[v] ← ∞ for all v;  d[start] ← 0
+    Q ← MIN_HEAP with (0, start)
+    WHILE Q ≠ ∅:
+        (dist, u) ← EXTRACT_MIN(Q)
+        IF d[u] < dist: CONTINUE    // 이미 더 짧은 경로로 처리됨
+        FOR each (v, w) in graph[u]:
+            IF d[u] + w < d[v]:     // Relaxation
+                d[v] ← d[u] + w
+                INSERT(Q, (d[v], v))
+    RETURN d
+```
+
+<details>
+<summary>Python 구현</summary>
+
 ```python
 import heapq
 
@@ -302,24 +391,19 @@ def dijkstra(graph, start):
     distances = {node: float('inf') for node in graph}
     distances[start] = 0
     queue = [(0, start)]
-    
     while queue:
         current_distance, current_node = heapq.heappop(queue)
-        
-        # 이미 처리된 노드라면 스킵
         if distances[current_node] < current_distance:
             continue
-            
         for neighbor, weight in graph[current_node].items():
             distance = current_distance + weight
-            
-            # 더 짧은 경로를 찾은 경우 (Relaxation)
             if distance < distances[neighbor]:
                 distances[neighbor] = distance
                 heapq.heappush(queue, (distance, neighbor))
-                
     return distances
 ```
+
+</details>
 
 ---
 

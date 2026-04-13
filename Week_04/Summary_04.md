@@ -138,6 +138,18 @@ Low: 0, High: 6, Mid: 3 (arr[3] = 7)
 - **결합 (Combine)**: 별도의 결합 과정이 필요 없으며, 찾은 결과(인덱스)를 상위 호출로 그대로 전달합니다.
 - **시간 복잡도**: 문제의 크기가 매 단계 절반으로 줄어들며 1번의 비교를 수행하므로  $T(n) = T(n/2) + \Theta(1) \rightarrow \Theta(\log\_{2}{n})$  입니다.
 
+```
+ALGORITHM BINARY_SEARCH(arr, low, high, target)
+    IF low > high: RETURN -1
+    mid ← (low + high) // 2
+    IF arr[mid] = target:   RETURN mid
+    IF arr[mid] > target:   RETURN BINARY_SEARCH(arr, low, mid-1, target)
+    ELSE:                   RETURN BINARY_SEARCH(arr, mid+1, high, target)
+```
+
+<details>
+<summary>Python 구현</summary>
+
 ```python
 def binary_search(arr, low, high, target):
     if low > high: return -1
@@ -149,6 +161,8 @@ def binary_search(arr, low, high, target):
     else:
         return binary_search(arr, mid + 1, high, target)
 ```
+
+</details>
 
 ### 3.2 합병 정렬 (Merge Sort)
 데이터를 원소가 하나인 상태까지 쪼갠 뒤, 정렬된 상태를 유지하며 다시 합치는 알고리즘입니다.
@@ -170,6 +184,26 @@ def binary_search(arr, low, high, target):
 - **시간 복잡도**:  $T(n) = 2T(n/2) + \Theta(n)$  이므로 마스터 정리에 의해 항상  $\Theta(n \log\_{2}{n})$  을 보장합니다.
 - **특징**: 데이터의 초기 상태와 관계없이 일정한 성능을 보장하는 **안정 정렬(Stable Sort)** 입니다.
 
+```
+ALGORITHM MERGE_SORT(arr)
+    IF |arr| ≤ 1: RETURN arr
+    mid   ← |arr| // 2
+    left  ← MERGE_SORT(arr[0..mid])
+    right ← MERGE_SORT(arr[mid..|arr|])
+    RETURN MERGE(left, right)
+
+ALGORITHM MERGE(left, right)
+    result ← [], i ← 0, j ← 0
+    WHILE i < |left| AND j < |right|
+        IF left[i] ≤ right[j]: APPEND left[i];  i++
+        ELSE:                   APPEND right[j]; j++
+    APPEND remaining of left and right
+    RETURN result
+```
+
+<details>
+<summary>Python 구현</summary>
+
 ```python
 def merge_sort(arr):
     if len(arr) <= 1: return arr
@@ -188,6 +222,8 @@ def merge(left, right):
     result.extend(left[i:]); result.extend(right[j:])
     return result
 ```
+
+</details>
 
 ---
 
@@ -211,6 +247,26 @@ Initial: [ 31, 8, 48, 73, 11, 3, 20, 15 ] (Pivot: 15)
     - **최악**: 이미 정렬된 배열에서 매번 최솟값이나 최댓값을 피벗으로 잡을 때  $\Theta(n^{2})$  입니다.
 - **피벗 선택 전략**: 최악의 경우를 방지하기 위해 배열의 첫 값, 중간 값, 끝 값 중 중간값을 피벗으로 선택하는 **Median-of-Three** 전략 등을 사용합니다.
 
+```
+ALGORITHM QUICK_SORT(arr, low, high)
+    IF low < high:
+        p ← PARTITION(arr, low, high)
+        QUICK_SORT(arr, low, p-1)
+        QUICK_SORT(arr, p+1, high)
+
+ALGORITHM PARTITION(arr, low, high)
+    pivot ← arr[high]
+    i ← low - 1
+    FOR j ← low TO high-1
+        IF arr[j] ≤ pivot:
+            i++; SWAP(arr[i], arr[j])
+    SWAP(arr[i+1], arr[high])
+    RETURN i + 1
+```
+
+<details>
+<summary>Python 구현</summary>
+
 ```python
 def quick_sort(arr, low, high):
     if low < high:
@@ -228,6 +284,8 @@ def partition(arr, low, high):
     arr[i + 1], arr[high] = arr[high], arr[i + 1]
     return i + 1
 ```
+
+</details>
 
 ---
 

@@ -55,12 +55,24 @@
 - **원리**: 두 수의 최대공약수는 큰 수를 작은 수로 나눈 나머지의 최대공약수와 같습니다.
 - **직관적 이해**: 가로  $a$ , 세로  $b$  인 직사각형을 가장 큰 정사각형들로 빈틈없이 채울 때, 그 정사각형의 한 변의 길이가 바로 GCD입니다. 나머지를 취하는 과정은 직사각형에서 정사각형을 계속해서 잘라내는 과정과 같습니다.
 
+```
+ALGORITHM GCD(a, b)
+    WHILE b ≠ 0
+        a, b ← b, a mod b
+    RETURN a
+```
+
+<details>
+<summary>Python 구현</summary>
+
 ```python
 def gcd(a, b):
     while b != 0:
         a, b = b, a % b
     return a
 ```
+
+</details>
 
 ---
 
